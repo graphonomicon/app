@@ -4,12 +4,12 @@ final class Window: NSWindow {
     init(session: Session) {
         super.init(contentRect: .init(x: 0,
                                       y: 0,
-                                      width: 980,
-                                      height: 600),
+                                      width: 800,
+                                      height: 800),
                    styleMask: [.closable, .miniaturizable, .resizable, .titled, .fullSizeContentView],
                    backing: .buffered,
                    defer: false)
-        minSize.height = 200
+        minSize = .init(width: 800, height: 800)
         center()
         toolbar = .init()
         isReleasedWhenClosed = false

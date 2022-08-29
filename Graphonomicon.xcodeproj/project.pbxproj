@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE09AF6B28BCED61009EF382 /* Shades.metal in Sources */ = {isa = PBXBuildFile; fileRef = CE6B356D28BCCF7D00DA59F5 /* Shades.metal */; };
 		CE33BAA528BB87D100832174 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE33BAA428BB87D100832174 /* App.swift */; };
 		CE33BAA728BB87D100832174 /* Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE33BAA628BB87D100832174 /* Window.swift */; };
 		CE33BAA928BB87D200832174 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE33BAA828BB87D200832174 /* Assets.xcassets */; };
@@ -14,7 +15,6 @@
 		CE6B356728BCC39A00DA59F5 /* Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6B356628BCC39A00DA59F5 /* Content.swift */; };
 		CE6B356A28BCC3CC00DA59F5 /* Coffee in Frameworks */ = {isa = PBXBuildFile; productRef = CE6B356928BCC3CC00DA59F5 /* Coffee */; };
 		CE6B356C28BCCC4400DA59F5 /* Miew.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6B356B28BCCC4400DA59F5 /* Miew.swift */; };
-		CE6B356E28BCCF7D00DA59F5 /* Shades.metal in Sources */ = {isa = PBXBuildFile; fileRef = CE6B356D28BCCF7D00DA59F5 /* Shades.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -152,7 +152,7 @@
 				CE33BAA728BB87D100832174 /* Window.swift in Sources */,
 				CE6B356528BCC33700DA59F5 /* Session.swift in Sources */,
 				CE33BAA528BB87D100832174 /* App.swift in Sources */,
-				CE6B356E28BCCF7D00DA59F5 /* Shades.metal in Sources */,
+				CE09AF6B28BCED61009EF382 /* Shades.metal in Sources */,
 				CE6B356728BCC39A00DA59F5 /* Content.swift in Sources */,
 				CE6B356C28BCCC4400DA59F5 /* Miew.swift in Sources */,
 			);
