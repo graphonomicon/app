@@ -7,17 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE33BAA528BB87D100832174 /* macOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE33BAA428BB87D100832174 /* macOSApp.swift */; };
-		CE33BAA728BB87D100832174 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE33BAA628BB87D100832174 /* ContentView.swift */; };
+		CE33BAA528BB87D100832174 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE33BAA428BB87D100832174 /* App.swift */; };
+		CE33BAA728BB87D100832174 /* Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE33BAA628BB87D100832174 /* Window.swift */; };
 		CE33BAA928BB87D200832174 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE33BAA828BB87D200832174 /* Assets.xcassets */; };
+		CE6B356528BCC33700DA59F5 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6B356428BCC33700DA59F5 /* Session.swift */; };
+		CE6B356728BCC39A00DA59F5 /* Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6B356628BCC39A00DA59F5 /* Content.swift */; };
+		CE6B356A28BCC3CC00DA59F5 /* Coffee in Frameworks */ = {isa = PBXBuildFile; productRef = CE6B356928BCC3CC00DA59F5 /* Coffee */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CE33BAA128BB87D100832174 /* Graphonomicon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Graphonomicon.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE33BAA428BB87D100832174 /* macOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSApp.swift; sourceTree = "<group>"; };
-		CE33BAA628BB87D100832174 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		CE33BAA428BB87D100832174 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		CE33BAA628BB87D100832174 /* Window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Window.swift; sourceTree = "<group>"; };
 		CE33BAA828BB87D200832174 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CE33BAAD28BB87D200832174 /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
+		CE6B356428BCC33700DA59F5 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
+		CE6B356628BCC39A00DA59F5 /* Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Content.swift; sourceTree = "<group>"; };
 		CECC714F28BB8CE8001D78E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -26,6 +31,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE6B356A28BCC3CC00DA59F5 /* Coffee in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -51,10 +57,12 @@
 		CE33BAA328BB87D100832174 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
-				CECC714F28BB8CE8001D78E6 /* Info.plist */,
 				CE33BAAD28BB87D200832174 /* macOS.entitlements */,
-				CE33BAA628BB87D100832174 /* ContentView.swift */,
-				CE33BAA428BB87D100832174 /* macOSApp.swift */,
+				CECC714F28BB8CE8001D78E6 /* Info.plist */,
+				CE33BAA428BB87D100832174 /* App.swift */,
+				CE6B356628BCC39A00DA59F5 /* Content.swift */,
+				CE6B356428BCC33700DA59F5 /* Session.swift */,
+				CE33BAA628BB87D100832174 /* Window.swift */,
 				CE33BAA828BB87D200832174 /* Assets.xcassets */,
 			);
 			path = macOS;
@@ -76,6 +84,9 @@
 			dependencies = (
 			);
 			name = macOS;
+			packageProductDependencies = (
+				CE6B356928BCC3CC00DA59F5 /* Coffee */,
+			);
 			productName = macOS;
 			productReference = CE33BAA128BB87D100832174 /* Graphonomicon.app */;
 			productType = "com.apple.product-type.application";
@@ -104,6 +115,9 @@
 				Base,
 			);
 			mainGroup = CE33BA9628BB87A200832174;
+			packageReferences = (
+				CE6B356828BCC3CC00DA59F5 /* XCRemoteSwiftPackageReference "coffee" */,
+			);
 			productRefGroup = CE33BAA228BB87D100832174 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -129,8 +143,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE33BAA728BB87D100832174 /* ContentView.swift in Sources */,
-				CE33BAA528BB87D100832174 /* macOSApp.swift in Sources */,
+				CE33BAA728BB87D100832174 /* Window.swift in Sources */,
+				CE6B356528BCC33700DA59F5 /* Session.swift in Sources */,
+				CE33BAA528BB87D100832174 /* App.swift in Sources */,
+				CE6B356728BCC39A00DA59F5 /* Content.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,6 +358,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CE6B356828BCC3CC00DA59F5 /* XCRemoteSwiftPackageReference "coffee" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/macoskit/coffee.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CE6B356928BCC3CC00DA59F5 /* Coffee */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE6B356828BCC3CC00DA59F5 /* XCRemoteSwiftPackageReference "coffee" */;
+			productName = Coffee;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CE33BA9728BB87A200832174 /* Project object */;
 }
