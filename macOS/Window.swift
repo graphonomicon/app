@@ -28,7 +28,7 @@ final class Window: NSWindow {
         
         content.topAnchor.constraint(equalTo: contentView!.topAnchor).isActive = true
         content.bottomAnchor.constraint(equalTo: contentView!.bottomAnchor).isActive = true
-        content.leftAnchor.constraint(equalTo: contentView!.rightAnchor).isActive = true
+        content.leftAnchor.constraint(equalTo: contentView!.leftAnchor).isActive = true
         content.rightAnchor.constraint(equalTo: contentView!.rightAnchor).isActive = true
     }
     
