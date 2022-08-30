@@ -10,6 +10,8 @@ final class Content: NSView {
     init(session: Session) {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
+        wantsLayer = true
+        layer!.backgroundColor = .black
         
         guard
             let device = MTLCreateSystemDefaultDevice(),

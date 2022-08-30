@@ -1,6 +1,7 @@
 import MetalKit
 
 final class Miew: MTKView {
+    private var timer = Float()
     private let queue: MTLCommandQueue
     private let state: MTLRenderPipelineState
     private let mesh: MTKMesh
@@ -11,7 +12,7 @@ final class Miew: MTKView {
             let library = device.makeDefaultLibrary(),
             let vertex = library.makeFunction(name: "vertex_main"),
             let fragment = library.makeFunction(name: "fragment_main"),
-            let mesh = try? MTKMesh(mesh: .init(sphereWithExtent: .init(x: 0.75, y: 0.75, z: 0.75),
+            let mesh = try? MTKMesh(mesh: .init(sphereWithExtent: .init(x: 0.4, y: 0.4, z: 0.4),
                                                 segments: [100, 100],
                                                 inwardNormals: false,
                                                 geometryType: .triangles,
@@ -34,10 +35,12 @@ final class Miew: MTKView {
         self.state = state
         self.mesh = mesh
         
-        super.init(frame: .init(origin: .init(x: 0, y: 24), size: .init(width: 800, height: 800)), device: device)
+        super.init(frame: .init(origin: .zero, size: .init(width: 800, height: 800)), device: device)
     }
     
     override func draw(_ dirtyRect: NSRect) {
+        timer += 0.005
+
         guard
             let buffer = queue.makeCommandBuffer(),
             let pass = currentRenderPassDescriptor,
@@ -45,8 +48,14 @@ final class Miew: MTKView {
             let submesh = mesh.submeshes.first,
             let drawable = currentDrawable
         else { return }
+        
+        var time = sin(timer)
         encoder.setRenderPipelineState(state)
         encoder.setVertexBuffer(mesh.vertexBuffers[0].buffer, offset: 0, index: 0)
+//        encoder.setTriangleFillMode(.fill)
+        encoder.setVertexBytes(&time,
+                               length: MemoryLayout<Float>.stride,
+                               index: 1)
         encoder.drawIndexedPrimitives(type: .triangle,
                                       indexCount: submesh.indexCount,
                                       indexType: submesh.indexType,

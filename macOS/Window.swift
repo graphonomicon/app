@@ -6,7 +6,7 @@ final class Window: NSWindow {
                                       y: 0,
                                       width: 800,
                                       height: 800),
-                   styleMask: [.closable, .miniaturizable, .resizable, .titled, .fullSizeContentView],
+                   styleMask: [.closable, .titled, .fullSizeContentView],
                    backing: .buffered,
                    defer: false)
         minSize = .init(width: 800, height: 800)
@@ -14,14 +14,8 @@ final class Window: NSWindow {
         toolbar = .init()
         isReleasedWhenClosed = false
         collectionBehavior = .fullScreenNone
-        setFrameAutosaveName("Window")
         tabbingMode = .disallowed
         titlebarAppearsTransparent = true
-        
-        let bar = NSTitlebarAccessoryViewController()
-        bar.view = NSView()
-        bar.layoutAttribute = .top
-        addTitlebarAccessoryViewController(bar)
         
         let content = Content(session: session)
         contentView!.addSubview(content)
