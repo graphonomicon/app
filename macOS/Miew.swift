@@ -20,6 +20,12 @@ final class Miew: MTKView {
                                     device: device)
         else { return nil }
         
+        let mm = MDLMesh(sphereWithExtent: .init(x: 0.4, y: 0.4, z: 0.4),
+                       segments: [100, 100],
+                       inwardNormals: false,
+                       geometryType: .triangles,
+                       allocator: MTKMeshBufferAllocator(device: device))
+        
         let pipeline = MTLRenderPipelineDescriptor()
         pipeline.colorAttachments[0].pixelFormat = .bgra8Unorm
         pipeline.vertexFunction = vertex
@@ -56,6 +62,29 @@ final class Miew: MTKView {
         encoder.setVertexBytes(&time,
                                length: MemoryLayout<Float>.stride,
                                index: 1)
+        var x: float4x4 = .init()
+        var xx = simd_float4x4()
+        var y = MDLMatrix4x4Array()
+        y.f
+//        x[0][0] = 8
+//        encoder.setVertexBuffer(x, offset: 0, index: 2)
+        
+        encoder.setVertexBytes(&x,
+                               length: MemoryLayout<Float>.stride,
+                               index: 2)
+        
+        
+        
+        let uniformBuffer = device.makeBuffer(length: MemoryLayout<Float>.size * 16, options: [])
+        // 3
+        let bufferPointer = uniformBuffer.contents()
+        // 4
+        memcpy(bufferPointer, nodeModelMatrix.raw(), MemoryLayout<Float>.size * 16)
+        // 5
+        renderEncoder.setVertexBuffer(uniformBuffer, offset: 0, at: 1)
+        
+        
+        
         encoder.drawIndexedPrimitives(type: .triangle,
                                       indexCount: submesh.indexCount,
                                       indexType: submesh.indexType,

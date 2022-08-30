@@ -13,15 +13,21 @@ struct VertexOut {
     float point_size [[ point_size ]];
 };
 
+struct Uniforms {
+    float4x4 matrix;
+};
+
 vertex VertexOut vertex_main(const VertexIn vertex_in [[ stage_in ]],
-                             constant float &timer [[ buffer(1) ]]) {
+                             constant float &timer [[ buffer(1) ]],
+                             const device Uniforms &uniforms [[ buffer(2) ]]) {
     VertexOut vertex_out;
-    vertex_out.position = vertex_in.position;
+    vertex_out.position = uniforms.matrix * vertex_in.position;
     vertex_out.color = vertex_in.color;
 //    vertex_out.position.y += timer;
 //    vertex_out.timer = timer;
 //    vertexOut.pointSize = 4;
 //    vertexOut.color = float4(1, 1, 1, 1);
+    uniforms.matrix;
     return vertex_out;
 }
 
