@@ -2,8 +2,9 @@
 using namespace metal;
 
 struct VertexIn {
-    float4 position [[ attribute(0) ]];
-    float4 color [[ attribute(1) ]];
+    float3 position [[ attribute(0) ]];
+    float3 normal [[ attribute(1) ]];
+    float2 texture [[ attribute(2) ]];
 };
 
 struct VertexOut {
@@ -13,21 +14,19 @@ struct VertexOut {
     float point_size [[ point_size ]];
 };
 
-struct Uniforms {
+struct Constants {
     float4x4 matrix;
 };
 
 vertex VertexOut vertex_main(const VertexIn vertex_in [[ stage_in ]],
-                             constant float &timer [[ buffer(1) ]],
-                             const device Uniforms &uniforms [[ buffer(2) ]]) {
+                             constant Constants &constants [[ buffer(1) ]]) {
     VertexOut vertex_out;
-    vertex_out.position = uniforms.matrix * vertex_in.position;
-    vertex_out.color = vertex_in.color;
+    vertex_out.position = constants.matrix * float4(vertex_in.position, 1);
+    vertex_out.color = float4(vertex_in.texture, 1, 1);
 //    vertex_out.position.y += timer;
 //    vertex_out.timer = timer;
 //    vertexOut.pointSize = 4;
 //    vertexOut.color = float4(1, 1, 1, 1);
-    uniforms.matrix;
     return vertex_out;
 }
 
