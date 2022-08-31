@@ -7,6 +7,7 @@ final class Miew: MTKView {
     private let state: MTLRenderPipelineState
     private let mesh: MTKMesh
     private let constants: MTLBuffer
+    private let depth: MTLDepthStencilState
     private let semaphore = DispatchSemaphore(value: 3)
     
     required init(coder: NSCoder) { fatalError() }
@@ -24,26 +25,33 @@ final class Miew: MTKView {
                                     device: device)
         else { return nil }
         
-        mesh.vertexDescriptor.attributes.removeObject(at: 2)
+//        mesh.vertexDescriptor.attributes.removeObject(at: 2)
         
         let pipeline = MTLRenderPipelineDescriptor()
         pipeline.colorAttachments[0].pixelFormat = .bgra8Unorm
+        pipeline.depthAttachmentPixelFormat = .depth32Float
         pipeline.vertexFunction = vertex
         pipeline.fragmentFunction = fragment
         pipeline.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(mesh.vertexDescriptor)
         
+        let depth = MTLDepthStencilDescriptor()
+        depth.isDepthWriteEnabled = true
+        depth.depthCompareFunction = .less
+        
         guard
             let queue = device.makeCommandQueue(),
-            let state = try? device.makeRenderPipelineState(descriptor: pipeline)
+            let state = try? device.makeRenderPipelineState(descriptor: pipeline),
+            let depth = device.makeDepthStencilState(descriptor: depth)
         else { return nil }
 
         self.queue = queue
         self.state = state
         self.mesh = mesh
         self.constants = constants
-        
+        self.depth = depth
         
         super.init(frame: .init(origin: .zero, size: .init(width: 800, height: 800)), device: device)
+        depthStencilPixelFormat = .depth32Float
     }
     
     override func draw(_ dirtyRect: NSRect) {
@@ -58,7 +66,12 @@ final class Miew: MTKView {
             let drawable = currentDrawable
         else { return }
         
+        
+        
+        
         encoder.setRenderPipelineState(state)
+        encoder.setCullMode(.back)
+        encoder.setDepthStencilState(depth)
         
         
         encoder.setVertexBuffer(mesh.vertexBuffers[0].buffer, offset: 0, index: 0)
