@@ -24,11 +24,7 @@ final class Miew: MTKView {
                                     device: device)
         else { return nil }
         
-//        let mm = MDLMesh(sphereWithExtent: .init(x: 0.4, y: 0.4, z: 0.4),
-//                       segments: [100, 100],
-//                       inwardNormals: false,
-//                       geometryType: .triangles,
-//                       allocator: MTKMeshBufferAllocator(device: device))
+        mesh.vertexDescriptor.attributes.removeObject(at: 2)
         
         let pipeline = MTLRenderPipelineDescriptor()
         pipeline.colorAttachments[0].pixelFormat = .bgra8Unorm
@@ -91,11 +87,11 @@ final class Miew: MTKView {
         
         encoder.setVertexBuffer(constants, offset: (count % 3) * MemoryLayout<SIMD2<Float>>.size * 16, index: 1)
         
-        encoder.drawIndexedPrimitives(type: .triangle,
+        encoder.drawIndexedPrimitives(type: submesh.primitiveType,
                                       indexCount: submesh.indexCount,
                                       indexType: submesh.indexType,
                                       indexBuffer: submesh.indexBuffer.buffer,
-                                      indexBufferOffset: 0)
+                                      indexBufferOffset: submesh.indexBuffer.offset)
         encoder.endEncoding()
         buffer.present(drawable)
         
