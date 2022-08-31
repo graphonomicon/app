@@ -13,11 +13,11 @@ final class Miew: MTKView {
     init?(device: MTLDevice) {
         guard
             let library = device.makeDefaultLibrary(),
-            let constants = device.makeBuffer(length: MemoryLayout<SIMD2<Float>>.size * 16 * 3),
+            let constants = device.makeBuffer(length: MemoryLayout<simd_float4x4>.size * 256 * 3),
             let vertex = library.makeFunction(name: "vertex_main"),
             let fragment = library.makeFunction(name: "fragment_main"),
-            let mesh = try? MTKMesh(mesh: .init(sphereWithExtent: .init(x: 0.4, y: 0.4, z: 0.4),
-                                                segments: [100, 100],
+            let mesh = try? MTKMesh(mesh: .init(sphereWithExtent: .init(x: 1, y: 1, z: 1),
+                                                segments: [128, 128],
                                                 inwardNormals: false,
                                                 geometryType: .triangles,
                                                 allocator: MTKMeshBufferAllocator(device: device)),
@@ -59,6 +59,8 @@ final class Miew: MTKView {
         else { return }
         
         encoder.setRenderPipelineState(state)
+        
+        
         encoder.setVertexBuffer(mesh.vertexBuffers[0].buffer, offset: 0, index: 0)
 //        encoder.setTriangleFillMode(.fill)
 
@@ -85,7 +87,7 @@ final class Miew: MTKView {
 //        // 5
 //        renderEncoder.setVertexBuffer(uniformBuffer, offset: 0, at: 1)
         
-        encoder.setVertexBuffer(constants, offset: (count % 3) * MemoryLayout<SIMD2<Float>>.size * 16, index: 1)
+        encoder.setVertexBuffer(constants, offset: (count % 3) * MemoryLayout<simd_float4x4>.size * 256, index: 1)
         
         encoder.drawIndexedPrimitives(type: submesh.primitiveType,
                                       indexCount: submesh.indexCount,
@@ -101,40 +103,72 @@ final class Miew: MTKView {
                 self?.semaphore.signal()
             }
         
+        
+        
+        
         buffer.commit()
     }
     
     private func tick() {
-        time += 1.0 / .init(preferredFramesPerSecond)
-        let t = Float(time)
-        let pulseRate: Float = 1.5
-        let scaleFactor = 1.0 + 0.5 * cos(pulseRate * t)
-        let scale = SIMD2<Float>(scaleFactor, scaleFactor)
-        let scaleMatrix = simd_float4x4(scale2D: scale)
+//        time += 1.0 / .init(preferredFramesPerSecond)
+//        let t = Float(time)
+//        let pulseRate: Float = 1.5
+//        let scaleFactor = 1.0 + 0.5 * cos(pulseRate * t)
+//        let scale = SIMD2<Float>(scaleFactor, scaleFactor)
+//        let scaleMatrix = simd_float4x4(scale2D: scale)
+//
+//        let rotationRate: Float = 2.5
+//        let rotationAngle = rotationRate * t
+//        let rotationMatrix = simd_float4x4(rotateZ: rotationAngle)
+//
+//        let orbitalRadius: Float = 200
+//        let translation = orbitalRadius * SIMD2<Float>(cos(t), sin(t))
+//        let translationMatrix = simd_float4x4(translate2D: translation)
+//
+//        let modelMatrix = translationMatrix * rotationMatrix * scaleMatrix
+//
+////        let aspectRatio = Float(drawableSize.width / drawableSize.height)
+////        let canvasWidth: Float = 800
+////        let canvasHeight = canvasWidth / aspectRatio
+////        let projectionMatrix = simd_float4x4(orthographicProjectionWithLeft: -canvasWidth / 2,
+////                                             top: canvasHeight / 2,
+////                                             right: canvasWidth / 2,
+////                                             bottom: -canvasHeight / 2,
+////                                             near: 0.0,
+////                                             far: 1.0)
+//
+//        let aspectRatio = Float(drawableSize.width / drawableSize.height)
+//        let canvasWidth: Float = 5.0
+//        let canvasHeight = canvasWidth / aspectRatio
+//        let projectionMatrix =
+//        simd_float4x4(orthographicProjectionWithLeft: -canvasWidth / 2,
+//                      top: canvasHeight / 2,
+//                      right: canvasWidth / 2,
+//                      bottom: -canvasHeight / 2,
+//                      near: -1,
+//                      far: 1)
+//
+//        var transformMatrix = projectionMatrix// * modelMatrix
+//        let contents = constants.contents().advanced(by: (count % 3) * MemoryLayout<simd_float4x4>.size * 256)
+//        contents.copyMemory(from: &transformMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
         
-        let rotationRate: Float = 2.5
-        let rotationAngle = rotationRate * t
-        let rotationMatrix = simd_float4x4(rotateZ: rotationAngle)
         
-        let orbitalRadius: Float = 200
-        let translation = orbitalRadius * SIMD2<Float>(cos(t), sin(t))
-        let translationMatrix = simd_float4x4(translate2D: translation)
-        
-        let modelMatrix = translationMatrix * rotationMatrix * scaleMatrix
-        
-        let aspectRatio = Float(drawableSize.width / drawableSize.height)
-        let canvasWidth: Float = 800
-        let canvasHeight = canvasWidth / aspectRatio
-        let projectionMatrix = simd_float4x4(orthographicProjectionWithLeft: -canvasWidth / 2,
-                                             top: canvasHeight / 2,
-                                             right: canvasWidth / 2,
-                                             bottom: -canvasHeight / 2,
-                                             near: 0.0,
-                                             far: 1.0)
-        
-        var transformMatrix = projectionMatrix * modelMatrix
-        let contents = constants.contents().advanced(by: (count % 3) * MemoryLayout<SIMD2<Float>>.size * 16)
-        contents.copyMemory(from: &transformMatrix, byteCount: MemoryLayout<SIMD2<Float>>.size)
+        let modelMatrix = matrix_identity_float4x4
+
+                let aspectRatio = Float(drawableSize.width / drawableSize.height)
+                let canvasWidth: Float = 5.0
+                let canvasHeight = canvasWidth / aspectRatio
+                let projectionMatrix = simd_float4x4(orthographicProjectionWithLeft: -canvasWidth / 2,
+                                                     top: canvasHeight / 2,
+                                                     right: canvasWidth / 2,
+                                                     bottom: -canvasHeight / 2,
+                                                     near: -1,
+                                                     far: 1)
+
+                var transformMatrix = projectionMatrix * modelMatrix
+
+                let constants = constants.contents().advanced(by: (count % 3) * (MemoryLayout<simd_float4x4>.size * 256))
+                constants.copyMemory(from: &transformMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
     }
 }
 
