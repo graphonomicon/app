@@ -123,6 +123,9 @@ final class Miew: MTKView {
     }
     
     private func tick() {
+        time += (1.0 / Double(preferredFramesPerSecond))
+        let t = Float(time)
+        
 //        time += 1.0 / .init(preferredFramesPerSecond)
 //        let t = Float(time)
 //        let pulseRate: Float = 1.5
@@ -166,7 +169,13 @@ final class Miew: MTKView {
 //        contents.copyMemory(from: &transformMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
         
         
-        let modelMatrix = matrix_identity_float4x4
+        let cameraPosition = SIMD3<Float>(0, 0, 5)
+        let viewMatrix = simd_float4x4(translate: -cameraPosition)
+        
+        let yAxis = SIMD3<Float>(0, 1, 0)
+        let rotate = simd_float4x4(rotateAbout: yAxis, byAngle: t)
+        
+        let modelMatrix = rotate * matrix_identity_float4x4
 
                 let aspectRatio = Float(drawableSize.width / drawableSize.height)
                 let canvasWidth: Float = 5.0
@@ -178,7 +187,7 @@ final class Miew: MTKView {
                                                      near: -1,
                                                      far: 1)
 
-                var transformMatrix = projectionMatrix * modelMatrix
+                var transformMatrix = projectionMatrix  * modelMatrix
 
                 let constants = constants.contents().advanced(by: (count % 3) * (MemoryLayout<simd_float4x4>.size * 256))
                 constants.copyMemory(from: &transformMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
@@ -224,5 +233,27 @@ extension simd_float4x4 {
                       SIMD4<Float>( 0, sy,  0, 0),
                       SIMD4<Float>( 0,  0, sz, 0),
                       SIMD4<Float>(tx, ty, tz, 1))
+        }
+    
+    init(translate t: SIMD3<Float>) {
+            self.init(SIMD4<Float>(  1,   0,   0, 0),
+                      SIMD4<Float>(  0,   1,   0, 0),
+                      SIMD4<Float>(  0,   0,   1, 0),
+                      SIMD4<Float>(t.x, t.y, t.z, 1))
+        }
+    
+    init(rotateAbout axis: SIMD3<Float>, byAngle radians: Float) {
+            let x = axis.x
+            let y = axis.y
+            let z = axis.z
+            let s = sin(radians)
+            let c = cos(radians)
+
+            self.init(
+                SIMD4<Float>(x * x + (1 - x * x) * c, x * y * (1 - c) - z * s, x * z * (1 - c) + y * s, 0),
+                SIMD4<Float>(x * y * (1 - c) + z * s, y * y + (1 - y * y) * c, y * z * (1 - c) - x * s, 0),
+                SIMD4<Float>(x * z * (1 - c) - y * s, y * z * (1 - c) + x * s, z * z + (1 - z * z) * c, 0),
+                SIMD4<Float>(                      0,                       0,                       0, 1)
+            )
         }
 }
