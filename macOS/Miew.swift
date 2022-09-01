@@ -56,9 +56,9 @@ final class Miew: MTKView {
                 samplerDescriptor.normalizedCoordinates = true
         samplerDescriptor.magFilter = .linear
                 samplerDescriptor.minFilter = .linear
-                samplerDescriptor.mipFilter = .nearest
+        samplerDescriptor.mipFilter = .nearest
         samplerDescriptor.sAddressMode = .clampToEdge
-                samplerDescriptor.tAddressMode = .clampToEdge
+        samplerDescriptor.tAddressMode = .clampToEdge
                 sampler = device.makeSamplerState(descriptor: samplerDescriptor)!
         
         let textureLoader = MTKTextureLoader(device: device)
@@ -222,8 +222,8 @@ final class Miew: MTKView {
 //                                                     top: canvasHeight / 2,
 //                                                     right: canvasWidth / 2,
 //                                                     bottom: -canvasHeight / 2,
-//                                                     near: -1,
-//                                                     far: 1)
+//                                                     near: -0.01,
+//                                                     far: 100)
         
         let projectionMatrix = simd_float4x4(perspectiveProjectionFoVY: .pi / 3,
                                                      aspectRatio: aspectRatio,
@@ -237,8 +237,9 @@ final class Miew: MTKView {
     }
     
     private static var image: CGImage {
+        
         let context = CGContext(data: nil,
-                                width: imageSize,
+                                width: imageSize * 2,
                                 height: imageSize,
                                 bitsPerComponent: 8,
                                 bytesPerRow: 24 * imageSize,
@@ -250,18 +251,22 @@ final class Miew: MTKView {
         gradient.endPoint = .init(x: 0, y: 1)
         gradient.locations = [0, 1]
         gradient.colors = [NSColor.systemBlue.cgColor, NSColor.purple.cgColor]
-        gradient.frame = .init(x: 0, y: 0, width: imageSize, height: imageSize)
-        
-//        context.adde
-        
+        gradient.frame = .init(x: 0, y: 0, width: imageSize * 2, height: imageSize)
         gradient.render(in: context)
         
-//        context.draw(gradient, at: .zero)
+        let circle = CAShapeLayer()
+//        circle.frame = .init(x: 0, y: 50, width: 50, height: 50)
+        circle.fillColor = .white
+        let p = CGMutablePath()
+        p.addArc(center: .init(x: 256, y: 128), radius: 64, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+//        circle.path = CGPath(ellipseIn: .init(x: 20, y: 20, width: 48, height: 48), transform: nil)
+        circle.path = p
+        circle.render(in: context)
         return context.makeImage()!
     }
 }
 
-private let imageSize = 600
+private let imageSize = 512
 
 extension simd_float4x4 {
     init(scale2D s: SIMD2<Float>) {
