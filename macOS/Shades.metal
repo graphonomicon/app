@@ -4,12 +4,13 @@ using namespace metal;
 struct VertexIn {
     float3 position [[ attribute(0) ]];
     float3 normal [[ attribute(1) ]];
+    float2 texCoords [[ attribute(2) ]];
 };
 
 struct VertexOut {
     float4 position [[ position ]];
     float3 normal;
-    
+    float2 texCoords;
     
     
     float4 color;
@@ -35,9 +36,12 @@ vertex VertexOut vertex_main(const VertexIn vertex_in [[ stage_in ]],
     return vertex_out;
 }
 
-fragment float4 fragment_main(VertexOut in [[ stage_in ]]) {
-    float3 L = normalize(float3(0.2, -0.5, 0));
-    float3 N = normalize(in.normal);
-    float NdotL = saturate(dot(N, L));
-    return float4(float3(NdotL), 1);
+fragment float4 fragment_main(VertexOut in [[ stage_in ]],
+                              texture2d<float, access::sample> textureMap [[ texture(0) ]],
+                              sampler textureSampler [[ sampler(0) ]]) {
+//    float3 L = normalize(float3(0.2, -0.5, 0));
+//    float3 N = normalize(in.normal);
+//    float NdotL = saturate(dot(N, L));
+//    return float4(float3(NdotL), 1);
+    return textureMap.sample(textureSampler, in.texCoords);
 }

@@ -9,6 +9,8 @@ final class Miew: MTKView {
     private let constants: MTLBuffer
     private let depth: MTLDepthStencilState
     private let semaphore = DispatchSemaphore(value: 3)
+    private let sampler: MTLSamplerState
+    private let texture: MTLTexture
     
     required init(coder: NSCoder) { fatalError() }
     init?(device: MTLDevice) {
@@ -50,8 +52,39 @@ final class Miew: MTKView {
         self.constants = constants
         self.depth = depth
         
+        let samplerDescriptor = MTLSamplerDescriptor()
+                samplerDescriptor.normalizedCoordinates = true
+                samplerDescriptor.magFilter = .linear
+                samplerDescriptor.minFilter = .linear
+                samplerDescriptor.mipFilter = .nearest
+                samplerDescriptor.sAddressMode = .repeat
+                samplerDescriptor.tAddressMode = .repeat
+                sampler = device.makeSamplerState(descriptor: samplerDescriptor)!
+        
+        let textureLoader = MTKTextureLoader(device: device)
+        
+        let options: [MTKTextureLoader.Option : Any] = [
+            .textureUsage : MTLTextureUsage.shaderRead.rawValue,
+            .textureStorageMode : MTLStorageMode.private.rawValue
+        ]
+        
+        texture = try! textureLoader.newTexture(cgImage: Self.image, options: options)
+        
+        
         super.init(frame: .init(origin: .zero, size: .init(width: 800, height: 800)), device: device)
         depthStencilPixelFormat = .depth32Float
+        
+//        let textureDescriptor = MTLTextureDescriptor()
+//        textureDescriptor.pixelFormat = MTLPixelFormat.bgra8Unorm
+//        textureDescriptor.width = 128
+//        textureDescriptor.height = 128
+//        textureDescriptor.usage = .shaderRead
+//        textureDescriptor.storageMode = .private
+//
+//
+//        let texture = device.makeTexture(descriptor: textureDescriptor)!
+        
+        
     }
     
     override func draw(_ dirtyRect: NSRect) {
@@ -101,6 +134,9 @@ final class Miew: MTKView {
 //        renderEncoder.setVertexBuffer(uniformBuffer, offset: 0, at: 1)
         
         encoder.setVertexBuffer(constants, offset: (count % 3) * MemoryLayout<simd_float4x4>.size * 256, index: 1)
+        
+        encoder.setFragmentTexture(texture, index: 0)
+        encoder.setFragmentSamplerState(sampler, index: 0)
         
         encoder.drawIndexedPrimitives(type: submesh.primitiveType,
                                       indexCount: submesh.indexCount,
@@ -196,6 +232,28 @@ final class Miew: MTKView {
 
                 let constants = constants.contents().advanced(by: (count % 3) * (MemoryLayout<simd_float4x4>.size * 256))
                 constants.copyMemory(from: &transformMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
+    }
+    
+    private static var image: CGImage {
+        let context = CGContext(data: nil,
+                                width: 128,
+                                height: 128,
+                                bitsPerComponent: 8,
+                                bytesPerRow: 24 * 128,
+                                space: CGColorSpace.init(name: CGColorSpace.acescgLinear)!,
+                                bitmapInfo:  CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue).rawValue)!
+        
+        let gradient = CAGradientLayer()
+        gradient.startPoint = .init(x: 0.5, y: 1)
+        gradient.endPoint = .init(x: 0.5, y: 0)
+        gradient.locations = [0, 0.5, 1]
+        gradient.colors = [CGColor.white, CGColor(gray: 1, alpha: 0.2), CGColor(gray: 1, alpha: 0.1)]
+        gradient.frame = .init(x: 0, y: 0, width: 128, height: 128)
+        
+        gradient.render(in: context)
+        
+//        context.draw(gradient, at: .zero)
+        return context.makeImage()!
     }
 }
 
