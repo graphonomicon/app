@@ -54,11 +54,11 @@ final class Miew: MTKView {
         
         let samplerDescriptor = MTLSamplerDescriptor()
                 samplerDescriptor.normalizedCoordinates = true
-                samplerDescriptor.magFilter = .linear
+        samplerDescriptor.magFilter = .linear
                 samplerDescriptor.minFilter = .linear
                 samplerDescriptor.mipFilter = .nearest
-                samplerDescriptor.sAddressMode = .repeat
-                samplerDescriptor.tAddressMode = .repeat
+        samplerDescriptor.sAddressMode = .clampToEdge
+                samplerDescriptor.tAddressMode = .clampToEdge
                 sampler = device.makeSamplerState(descriptor: samplerDescriptor)!
         
         let textureLoader = MTKTextureLoader(device: device)
@@ -208,7 +208,9 @@ final class Miew: MTKView {
         let cameraPosition = SIMD3<Float>(0, 0, 5)
         let viewMatrix = simd_float4x4(translate: -cameraPosition)
         
+        let xAxis = SIMD3<Float>(1, 0, 0)
         let yAxis = SIMD3<Float>(0, 1, 0)
+        
         let rotate = simd_float4x4(rotateAbout: yAxis, byAngle: t)
         
         let modelMatrix = rotate * matrix_identity_float4x4
@@ -236,19 +238,21 @@ final class Miew: MTKView {
     
     private static var image: CGImage {
         let context = CGContext(data: nil,
-                                width: 128,
-                                height: 128,
+                                width: imageSize,
+                                height: imageSize,
                                 bitsPerComponent: 8,
-                                bytesPerRow: 24 * 128,
+                                bytesPerRow: 24 * imageSize,
                                 space: CGColorSpace.init(name: CGColorSpace.acescgLinear)!,
                                 bitmapInfo:  CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue).rawValue)!
         
         let gradient = CAGradientLayer()
-        gradient.startPoint = .init(x: 0.5, y: 1)
-        gradient.endPoint = .init(x: 0.5, y: 0)
-        gradient.locations = [0, 0.5, 1]
-        gradient.colors = [CGColor.white, CGColor(gray: 1, alpha: 0.2), CGColor(gray: 1, alpha: 0.1)]
-        gradient.frame = .init(x: 0, y: 0, width: 128, height: 128)
+        gradient.startPoint = .init(x: 0, y: 0)
+        gradient.endPoint = .init(x: 0, y: 1)
+        gradient.locations = [0, 1]
+        gradient.colors = [NSColor.systemBlue.cgColor, NSColor.purple.cgColor]
+        gradient.frame = .init(x: 0, y: 0, width: imageSize, height: imageSize)
+        
+//        context.adde
         
         gradient.render(in: context)
         
@@ -257,7 +261,7 @@ final class Miew: MTKView {
     }
 }
 
-
+private let imageSize = 600
 
 extension simd_float4x4 {
     init(scale2D s: SIMD2<Float>) {

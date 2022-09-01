@@ -29,6 +29,7 @@ vertex VertexOut vertex_main(const VertexIn vertex_in [[ stage_in ]],
 //    vertex_out.position = float4(vertex_in.position, 1);
 //    vertex_out.color = float4(vertex_in.texture, 1, 1);
     vertex_out.normal = vertex_in.normal;
+    vertex_out.texCoords = vertex_in.texCoords;
 //    vertex_out.position.y += timer;
 //    vertex_out.timer = timer;
 //    vertexOut.pointSize = 4;
