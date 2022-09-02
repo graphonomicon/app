@@ -18,14 +18,24 @@ final class Miew: MTKView {
             let library = device.makeDefaultLibrary(),
             let constants = device.makeBuffer(length: MemoryLayout<simd_float4x4>.size * 256 * 3),
             let vertex = library.makeFunction(name: "vertex_main"),
-            let fragment = library.makeFunction(name: "fragment_main"),
-            let mesh = try? MTKMesh(mesh: .init(sphereWithExtent: .init(x: 1, y: 1, z: 1),
-                                                segments: [128, 128],
-                                                inwardNormals: false,
-                                                geometryType: .triangles,
-                                                allocator: MTKMeshBufferAllocator(device: device)),
-                                    device: device)
+            let fragment = library.makeFunction(name: "fragment_main")
+            
         else { return nil }
+        
+        let scatter = MDLPhysicallyPlausibleScatteringFunction()
+        scatter.metallic.floatValue = 1
+        scatter.clearcoatGloss.floatValue = 1
+        
+        let mm = MDLMesh.init(sphereWithExtent: .init(x: 1, y: 1, z: 1),
+                              segments: [128, 128],
+                              inwardNormals: false,
+                              geometryType: .triangles,
+                              allocator: MTKMeshBufferAllocator(device: device))
+        (mm.submeshes?.firstObject as! MDLSubmesh).material = .init(name: "", scatteringFunction: scatter)
+        
+        
+        let mesh = try! MTKMesh(mesh: mm, device: device)
+        
         
 //        mesh.vertexDescriptor.attributes.removeObject(at: 2)
         
@@ -65,7 +75,8 @@ final class Miew: MTKView {
         
         let options: [MTKTextureLoader.Option : Any] = [
             .textureUsage : MTLTextureUsage.shaderRead.rawValue,
-            .textureStorageMode : MTLStorageMode.private.rawValue
+            .textureStorageMode : MTLStorageMode.private.rawValue,
+            .origin: MTKTextureLoader.Origin.topLeft.rawValue
         ]
         
         texture = try! textureLoader.newTexture(cgImage: Self.image, options: options)
