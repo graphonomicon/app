@@ -84,6 +84,7 @@ final class Miew: MTKView {
         
         super.init(frame: .init(origin: .zero, size: .init(width: 800, height: 800)), device: device)
         depthStencilPixelFormat = .depth32Float
+        clearColor = .init(red: 1, green: 1, blue: 1, alpha: 1)
         
 //        let textureDescriptor = MTLTextureDescriptor()
 //        textureDescriptor.pixelFormat = MTLPixelFormat.bgra8Unorm
@@ -261,7 +262,8 @@ final class Miew: MTKView {
         gradient.startPoint = .init(x: 0, y: 0)
         gradient.endPoint = .init(x: 0, y: 1)
         gradient.locations = [0, 1]
-        gradient.colors = [NSColor.systemBlue.cgColor, NSColor.purple.cgColor]
+        gradient.colors = [CGColor(red: 0.97, green: 0.98, blue: 0.99, alpha: 1),
+                           CGColor(red: 0.985, green: 0.99, blue: 1, alpha: 1)]
         gradient.frame = .init(x: 0, y: 0, width: imageSize * 2, height: imageSize)
         gradient.render(in: context)
         
