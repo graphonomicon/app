@@ -127,7 +127,7 @@ final class Miew: MTKView {
         encoder.setDepthStencilState(depth)
         
         
-        encoder.setVertexBuffer(mesh.vertexBuffers[0].buffer, offset: 0, index: 0)
+        
 //        encoder.setTriangleFillMode(.fill)
 
 //        var x: float4x4 = .init()
@@ -172,6 +172,9 @@ final class Miew: MTKView {
                 let canvasWidth: Float = 5.0
                 let canvasHeight = canvasWidth / aspectRatio
         
+        // vertex
+        encoder.setVertexBuffer(mesh.vertexBuffers[0].buffer, offset: 0, index: 0)
+        
         var projectionMatrix = simd_float4x4(perspectiveProjectionFoVY: .pi / 3,
                                                      aspectRatio: aspectRatio,
                                                      near: 0.01,
@@ -180,9 +183,13 @@ final class Miew: MTKView {
         var pointer = constants.contents().advanced(by: index)
         pointer.copyMemory(from: &projectionMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
         
-        encoder.setVertexBuffer(constants, offset: index, index: 1)
+        // frame
+        encoder.setVertexBuffer(constants, offset: index, index: 2)
         
-        encoder.setFragmentBuffer(constants, offset: index, index: 1)
+        
+        
+        // frame
+        encoder.setFragmentBuffer(constants, offset: index, index: 0)
         
         
         
@@ -190,11 +197,19 @@ final class Miew: MTKView {
         index += MemoryLayout<simd_float4x4>.size
         
         var transform = viewMatrix * modelMatrix
+        
+        
+        
+        
+        
+        
+        
         pointer = constants.contents().advanced(by: index)
         pointer.copyMemory(from: &transform, byteCount: MemoryLayout<simd_float4x4>.size)
         
         
-        encoder.setFragmentBuffer(constants, offset: index, index: 2)
+        // node
+        encoder.setVertexBuffer(constants, offset: index, index: 1)
         
         
         
@@ -342,8 +357,8 @@ final class Miew: MTKView {
         gradient.startPoint = .init(x: 0, y: 0)
         gradient.endPoint = .init(x: 0, y: 1)
         gradient.locations = [0, 1]
-        gradient.colors = [CGColor(red: 0.965, green: 0.98, blue: 0.985, alpha: 1),
-                           CGColor(red: 0.965, green: 0.97, blue: 0.99, alpha: 1)]
+        gradient.colors = [CGColor(red: 0.92, green: 0.95, blue: 0.99, alpha: 1),
+                           CGColor(red: 0.935, green: 0.945, blue: 0.98, alpha: 1)]
         gradient.frame = .init(x: 0, y: 0, width: imageSize * 2, height: imageSize)
         gradient.render(in: context)
         
