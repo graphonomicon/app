@@ -1,5 +1,7 @@
 import MetalKit
 
+private let bufferSize = 32_768
+
 final class Miew: MTKView {
     private var time = TimeInterval()
     private var count = Int()
@@ -16,7 +18,7 @@ final class Miew: MTKView {
     init?(device: MTLDevice) {
         guard
             let library = device.makeDefaultLibrary(),
-            let constants = device.makeBuffer(length: MemoryLayout<simd_float4x4>.size * 256 * 3, options: .storageModeShared),
+            let constants = device.makeBuffer(length: bufferSize * 3, options: .storageModeShared),
             let vertex = library.makeFunction(name: "vertex_main"),
             let fragment = library.makeFunction(name: "fragment_main")
             
@@ -36,7 +38,7 @@ final class Miew: MTKView {
         
         let mesh = try! MTKMesh(mesh: mm, device: device)
         
-        print(mesh.vertexDescriptor.attributes)
+//        print(mesh.vertexDescriptor.attributes)
 //        mesh.vertexDescriptor.attributes.removeObject(at: 2)
         
         let pipeline = MTLRenderPipelineDescriptor()
@@ -101,7 +103,13 @@ final class Miew: MTKView {
     
     override func draw(_ dirtyRect: NSRect) {
         semaphore.wait()
-        tick()
+//        tick()
+        
+        
+        time += (1.0 / Double(preferredFramesPerSecond))
+        let t = Float(time)
+        
+        
         
         guard
             let buffer = queue.makeCommandBuffer(),
@@ -145,7 +153,63 @@ final class Miew: MTKView {
 //        // 5
 //        renderEncoder.setVertexBuffer(uniformBuffer, offset: 0, at: 1)
         
-        encoder.setVertexBuffer(constants, offset: (count % 3) * MemoryLayout<simd_float4x4>.size * 256, index: 1)
+//        encoder.setVertexBuffer(constants, offset: (count % 3) * MemoryLayout<simd_float4x4>.size * 256, index: 1)
+        
+        
+        
+        
+        let cameraPosition = SIMD3<Float>(0, 0, 5)
+        let viewMatrix = simd_float4x4(translate: -cameraPosition)
+        
+        let xAxis = SIMD3<Float>(1, 0, 0)
+        let yAxis = SIMD3<Float>(0, 1, 0)
+        
+        let rotate = simd_float4x4(rotateAbout: yAxis, byAngle: t)
+        
+        let modelMatrix = rotate * matrix_identity_float4x4
+
+                let aspectRatio = Float(drawableSize.width / drawableSize.height)
+                let canvasWidth: Float = 5.0
+                let canvasHeight = canvasWidth / aspectRatio
+        
+        var projectionMatrix = simd_float4x4(perspectiveProjectionFoVY: .pi / 3,
+                                                     aspectRatio: aspectRatio,
+                                                     near: 0.01,
+                                                     far: 100)
+        var index = (count % 3) * bufferSize
+        var pointer = constants.contents().advanced(by: index)
+        pointer.copyMemory(from: &projectionMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
+        
+        encoder.setVertexBuffer(constants, offset: index, index: 1)
+        
+        encoder.setFragmentBuffer(constants, offset: index, index: 1)
+        
+        
+        
+        
+        index += MemoryLayout<simd_float4x4>.size
+        
+        var transform = viewMatrix * modelMatrix
+        pointer = constants.contents().advanced(by: index)
+        pointer.copyMemory(from: &transform, byteCount: MemoryLayout<simd_float4x4>.size)
+        
+        
+        encoder.setFragmentBuffer(constants, offset: index, index: 2)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         encoder.setFragmentTexture(texture, index: 0)
         encoder.setFragmentSamplerState(sampler, index: 0)
@@ -160,7 +224,6 @@ final class Miew: MTKView {
         
         buffer
             .addCompletedHandler { [weak self] _ in
-                self?.count += 1
                 self?.semaphore.signal()
             }
         
@@ -168,6 +231,7 @@ final class Miew: MTKView {
         
         
         buffer.commit()
+        count += 1
     }
     
     private func tick() {
@@ -237,15 +301,31 @@ final class Miew: MTKView {
 //                                                     near: -0.01,
 //                                                     far: 100)
         
-        let projectionMatrix = simd_float4x4(perspectiveProjectionFoVY: .pi / 3,
+        var projectionMatrix = simd_float4x4(perspectiveProjectionFoVY: .pi / 3,
                                                      aspectRatio: aspectRatio,
                                                      near: 0.01,
                                                      far: 100)
+        var index = (count % 3) * bufferSize
+        var pointer = constants.contents().advanced(by: index)
+        pointer.copyMemory(from: &projectionMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
+        
+        index += MemoryLayout<simd_float4x4>.size
+        
+        var transform = viewMatrix * modelMatrix
+        pointer = constants.contents().advanced(by: index)
+        pointer.copyMemory(from: &transform, byteCount: MemoryLayout<simd_float4x4>.size)
+        
+        index += MemoryLayout<simd_float4x4>.size
+        
+        
+        
+        
+        
 
-                var transformMatrix = projectionMatrix * viewMatrix * modelMatrix
-
-                let constants = constants.contents().advanced(by: (count % 3) * (MemoryLayout<simd_float4x4>.size * 256))
-                constants.copyMemory(from: &transformMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
+//                var transformMatrix = projectionMatrix * viewMatrix * modelMatrix
+//
+//                let constants = constants.contents().advanced(by: (count % 3) * (MemoryLayout<simd_float4x4>.size * 256))
+//                constants.copyMemory(from: &transformMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
     }
     
     private static var image: CGImage {
