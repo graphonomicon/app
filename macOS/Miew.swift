@@ -16,14 +16,14 @@ final class Miew: MTKView {
     init?(device: MTLDevice) {
         guard
             let library = device.makeDefaultLibrary(),
-            let constants = device.makeBuffer(length: MemoryLayout<simd_float4x4>.size * 256 * 3),
+            let constants = device.makeBuffer(length: MemoryLayout<simd_float4x4>.size * 256 * 3, options: .storageModeShared),
             let vertex = library.makeFunction(name: "vertex_main"),
             let fragment = library.makeFunction(name: "fragment_main")
             
         else { return nil }
         
         let scatter = MDLPhysicallyPlausibleScatteringFunction()
-        scatter.metallic.floatValue = 1
+        scatter.metallic.floatValue = 0
         scatter.clearcoatGloss.floatValue = 1
         
         let mm = MDLMesh.init(sphereWithExtent: .init(x: 1, y: 1, z: 1),
@@ -36,7 +36,7 @@ final class Miew: MTKView {
         
         let mesh = try! MTKMesh(mesh: mm, device: device)
         
-        
+        print(mesh.vertexDescriptor.attributes)
 //        mesh.vertexDescriptor.attributes.removeObject(at: 2)
         
         let pipeline = MTLRenderPipelineDescriptor()
@@ -262,14 +262,14 @@ final class Miew: MTKView {
         gradient.startPoint = .init(x: 0, y: 0)
         gradient.endPoint = .init(x: 0, y: 1)
         gradient.locations = [0, 1]
-        gradient.colors = [CGColor(red: 0.97, green: 0.98, blue: 0.99, alpha: 1),
-                           CGColor(red: 0.985, green: 0.99, blue: 1, alpha: 1)]
+        gradient.colors = [CGColor(red: 0.965, green: 0.98, blue: 0.985, alpha: 1),
+                           CGColor(red: 0.965, green: 0.97, blue: 0.99, alpha: 1)]
         gradient.frame = .init(x: 0, y: 0, width: imageSize * 2, height: imageSize)
         gradient.render(in: context)
         
         let circle = CAShapeLayer()
 //        circle.frame = .init(x: 0, y: 50, width: 50, height: 50)
-        circle.fillColor = .white
+        circle.fillColor = .init(red: 1, green: 1, blue: 1, alpha: 0.5)
         let p = CGMutablePath()
         p.addArc(center: .init(x: 256, y: 128), radius: 64, startAngle: 0, endAngle: .pi * 2, clockwise: true)
 //        circle.path = CGPath(ellipseIn: .init(x: 20, y: 20, width: 48, height: 48), transform: nil)

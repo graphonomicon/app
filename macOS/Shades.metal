@@ -12,6 +12,8 @@ struct VertexOut {
     float3 normal;
     float2 texCoords;
     
+    float3 viewPosition;
+    
     
     float4 color;
     float timer;
