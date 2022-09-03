@@ -73,16 +73,15 @@ fragment float4 fragment_main(VertexOut in [[ stage_in ]],
             float ambientFactor = 0;
             float diffuseFactor = 0;
             float specularFactor = 0;
-            float3 intensity = float3(0.2, 0.2, 0.2);
+            float3 intensity = float3(1, 1, 1);
 
             switch(i) {
                 case 0: {
                     ambientFactor = 1;
-                    intensity = 0.85 * float3(1, 1, 1);
                     break;
                 }
                 case 1: {
-                    ambientFactor = 0.3;
+                    intensity *= 0.1;
                     float3 direction = normalize(float3(0, 0, 1));
                     float3 L = normalize(-direction);
                     float3 H = normalize(L + V);
