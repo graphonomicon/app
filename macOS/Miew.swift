@@ -67,7 +67,7 @@ final class Miew: MTKView {
         let samplerDescriptor = MTLSamplerDescriptor()
                 samplerDescriptor.normalizedCoordinates = true
         samplerDescriptor.magFilter = .linear
-                samplerDescriptor.minFilter = .linear
+        samplerDescriptor.minFilter = .linear
         samplerDescriptor.mipFilter = .nearest
         samplerDescriptor.sAddressMode = .clampToEdge
         samplerDescriptor.tAddressMode = .clampToEdge
@@ -78,11 +78,11 @@ final class Miew: MTKView {
         let options: [MTKTextureLoader.Option : Any] = [
             .textureUsage : MTLTextureUsage.shaderRead.rawValue,
             .textureStorageMode : MTLStorageMode.private.rawValue,
-            .origin: MTKTextureLoader.Origin.topLeft.rawValue
+//            .origin: MTKTextureLoader.Origin.topLeft.rawValue
         ]
         
-        texture = try! textureLoader.newTexture(cgImage: Self.image, options: options)
-        
+//        texture = try! textureLoader.newTexture(cgImage: Self.image, options: options)
+        texture = try! textureLoader.newTexture(name: "Sphere", scaleFactor: 1, bundle: nil, options: options)
         
         super.init(frame: .init(origin: .zero, size: .init(width: 800, height: 800)), device: device)
         depthStencilPixelFormat = .depth32Float

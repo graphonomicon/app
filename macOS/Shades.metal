@@ -81,7 +81,7 @@ fragment float4 fragment_main(VertexOut in [[ stage_in ]],
                     break;
                 }
                 case 1: {
-                    intensity *= 0.1;
+                    intensity *= 0.35;
                     float3 direction = normalize(float3(0, 0, 1));
                     float3 L = normalize(-direction);
                     float3 H = normalize(L + V);
