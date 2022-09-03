@@ -356,8 +356,9 @@ final class Miew: MTKView {
         let gradient = CAGradientLayer()
         gradient.startPoint = .init(x: 0, y: 0)
         gradient.endPoint = .init(x: 0, y: 1)
-        gradient.locations = [0, 1]
+        gradient.locations = [0, 0.5, 1]
         gradient.colors = [CGColor(red: 0.92, green: 0.95, blue: 0.99, alpha: 1),
+                           CGColor(red: 0.94, green: 0.945, blue: 0.985, alpha: 1),
                            CGColor(red: 0.935, green: 0.945, blue: 0.98, alpha: 1)]
         gradient.frame = .init(x: 0, y: 0, width: imageSize * 2, height: imageSize)
         gradient.render(in: context)
