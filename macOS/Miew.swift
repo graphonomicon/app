@@ -7,12 +7,14 @@ final class Miew: MTKView {
     private var count = Int()
     private let queue: MTLCommandQueue
     private let state: MTLRenderPipelineState
-    private let mesh: MTKMesh
+    private let sphereMesh: MTKMesh
+    private let glowMesh: MTKMesh
     private let constants: MTLBuffer
     private let depth: MTLDepthStencilState
     private let semaphore = DispatchSemaphore(value: 3)
     private let sampler: MTLSamplerState
-    private let texture: MTLTexture
+    private let sphereTexture: MTLTexture
+    private let glowTexture: MTLTexture
     
     required init(coder: NSCoder) { fatalError() }
     init?(device: MTLDevice) {
@@ -36,7 +38,7 @@ final class Miew: MTKView {
         (mm.submeshes?.firstObject as! MDLSubmesh).material = .init(name: "", scatteringFunction: scatter)
         
         
-        let mesh = try! MTKMesh(mesh: mm, device: device)
+        let sphereMesh = try! MTKMesh(mesh: mm, device: device)
         
 //        print(mesh.vertexDescriptor.attributes)
 //        mesh.vertexDescriptor.attributes.removeObject(at: 2)
@@ -46,7 +48,7 @@ final class Miew: MTKView {
         pipeline.depthAttachmentPixelFormat = .depth32Float
         pipeline.vertexFunction = vertex
         pipeline.fragmentFunction = fragment
-        pipeline.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(mesh.vertexDescriptor)
+        pipeline.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(sphereMesh.vertexDescriptor)
         
         let depth = MTLDepthStencilDescriptor()
         depth.isDepthWriteEnabled = true
@@ -60,7 +62,7 @@ final class Miew: MTKView {
 
         self.queue = queue
         self.state = state
-        self.mesh = mesh
+        self.sphereMesh = sphereMesh
         self.constants = constants
         self.depth = depth
         
@@ -82,7 +84,26 @@ final class Miew: MTKView {
         ]
         
 //        texture = try! textureLoader.newTexture(cgImage: Self.image, options: options)
-        texture = try! textureLoader.newTexture(name: "Sphere", scaleFactor: 1, bundle: nil, options: options)
+        sphereTexture = try! textureLoader.newTexture(name: "Sphere", scaleFactor: 1, bundle: nil, options: options)
+        
+        
+        
+        let mdlPlane = MDLMesh(planeWithExtent: SIMD3<Float>(1.05, 1.05, 0.0),
+                                       segments: SIMD2<UInt32>(1, 1),
+                                       geometryType: .triangles,
+                                       allocator: bufferAllocator)
+                mdlPlane.vertexDescriptor = mdlVertexDescriptor
+                let mtkPlane = try! MTKMesh(mesh: mdlPlane, device: device)
+
+                let atmosphereTextureURL = Bundle.main.url(forResource: "atmosphere", withExtension: "png")!
+                let atmosphereTexture = try? textureLoader.newTexture(URL: atmosphereTextureURL, options: textureOptions)
+                atmosphereNode = Node(mesh: mtkPlane)
+                atmosphereNode.texture = atmosphereTexture
+        
+        
+        
+        
+        
         
         super.init(frame: .init(origin: .zero, size: .init(width: 800, height: 800)), device: device)
         depthStencilPixelFormat = .depth32Float
@@ -115,7 +136,7 @@ final class Miew: MTKView {
             let buffer = queue.makeCommandBuffer(),
             let pass = currentRenderPassDescriptor,
             let encoder = buffer.makeRenderCommandEncoder(descriptor: pass),
-            let submesh = mesh.submeshes.first,
+            let submesh = sphereMesh.submeshes.first,
             let drawable = currentDrawable
         else { return }
         
@@ -173,7 +194,7 @@ final class Miew: MTKView {
                 let canvasHeight = canvasWidth / aspectRatio
         
         // vertex
-        encoder.setVertexBuffer(mesh.vertexBuffers[0].buffer, offset: 0, index: 0)
+        encoder.setVertexBuffer(sphereMesh.vertexBuffers[0].buffer, offset: 0, index: 0)
         
         var projectionMatrix = simd_float4x4(perspectiveProjectionFoVY: .pi / 3,
                                                      aspectRatio: aspectRatio,
@@ -226,7 +247,7 @@ final class Miew: MTKView {
         
         
         
-        encoder.setFragmentTexture(texture, index: 0)
+        encoder.setFragmentTexture(sphereTexture, index: 0)
         encoder.setFragmentSamplerState(sampler, index: 0)
         
         encoder.drawIndexedPrimitives(type: submesh.primitiveType,
