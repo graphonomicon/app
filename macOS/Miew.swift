@@ -30,11 +30,13 @@ final class Miew: MTKView {
         scatter.metallic.floatValue = 0
         scatter.clearcoatGloss.floatValue = 1
         
+        let bufferAllocator = MTKMeshBufferAllocator(device: device)
+        
         let mm = MDLMesh.init(sphereWithExtent: .init(x: 1, y: 1, z: 1),
                               segments: [128, 128],
                               inwardNormals: false,
                               geometryType: .triangles,
-                              allocator: MTKMeshBufferAllocator(device: device))
+                              allocator: bufferAllocator)
         (mm.submeshes?.firstObject as! MDLSubmesh).material = .init(name: "", scatteringFunction: scatter)
         
         
@@ -92,18 +94,13 @@ final class Miew: MTKView {
                                        segments: SIMD2<UInt32>(1, 1),
                                        geometryType: .triangles,
                                        allocator: bufferAllocator)
-                mdlPlane.vertexDescriptor = mdlVertexDescriptor
-                let mtkPlane = try! MTKMesh(mesh: mdlPlane, device: device)
+                let glowMesh = try! MTKMesh(mesh: mdlPlane, device: device)
 
-                let atmosphereTextureURL = Bundle.main.url(forResource: "atmosphere", withExtension: "png")!
-                let atmosphereTexture = try? textureLoader.newTexture(URL: atmosphereTextureURL, options: textureOptions)
-                atmosphereNode = Node(mesh: mtkPlane)
-                atmosphereNode.texture = atmosphereTexture
         
         
         
-        
-        
+        self.glowMesh = glowMesh
+        glowTexture = try! textureLoader.newTexture(name: "Sphere", scaleFactor: 1, bundle: nil, options: options)
         
         super.init(frame: .init(origin: .zero, size: .init(width: 800, height: 800)), device: device)
         depthStencilPixelFormat = .depth32Float
