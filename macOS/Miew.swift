@@ -185,7 +185,6 @@ final class Miew: MTKView {
         
         let rotate = simd_float4x4(rotateAbout: yAxis, byAngle: t)
         
-        let modelMatrix = rotate * matrix_identity_float4x4
 
                 let aspectRatio = Float(drawableSize.width / drawableSize.height)
                 let canvasWidth: Float = 5.0
@@ -215,8 +214,12 @@ final class Miew: MTKView {
         
         index += MemoryLayout<simd_float4x4>.size
         
-        var transform = viewMatrix * modelMatrix
+        var sphereTransform = viewMatrix * (rotate * matrix_identity_float4x4)
         
+        
+        encoder.setVertexBuffer(glowMesh.vertexBuffers[0].buffer, offset: 0, index: 0)
+        
+        var glowTransform = simd_float4x4(lookAt: SIMD3<Float>(0, 0, 0), from: SIMD3<Float>(0, 0, 0), up: SIMD3<Float>(0, 1, 0))
         
         
         
@@ -224,7 +227,13 @@ final class Miew: MTKView {
         
         
         pointer = constants.contents().advanced(by: index)
-        pointer.copyMemory(from: &transform, byteCount: MemoryLayout<simd_float4x4>.size)
+        index += MemoryLayout<simd_float4x4>.size
+        
+        pointer.copyMemory(from: &sphereTransform, byteCount: MemoryLayout<simd_float4x4>.size)
+        encoder.setVertexBuffer(constants, offset: index, index: 1)
+        
+        pointer = constants.contents().advanced(by: index)
+        pointer.copyMemory(from: &glowTransform, byteCount: MemoryLayout<simd_float4x4>.size)
         
         
         // node
@@ -244,9 +253,9 @@ final class Miew: MTKView {
         
         
         
-        
+        encoder.setVertexBuffer(constants, offset: index, index: 1)
         encoder.setFragmentTexture(sphereTexture, index: 0)
-        encoder.setFragmentTexture(glowTexture, index: 1)
+        
         encoder.setFragmentSamplerState(sampler, index: 0)
         
         encoder.drawIndexedPrimitives(type: sphereSubmesh.primitiveType,
@@ -255,11 +264,18 @@ final class Miew: MTKView {
                                       indexBuffer: sphereSubmesh.indexBuffer.buffer,
                                       indexBufferOffset: sphereSubmesh.indexBuffer.offset)
         
+        
+        encoder.setVertexBuffer(constants, offset: index, index: 1)
+        encoder.setFragmentTexture(glowTexture, index: 0)
+        encoder.setFragmentSamplerState(sampler, index: 0)
+        
         encoder.drawIndexedPrimitives(type: glowSubmesh.primitiveType,
                                       indexCount: glowSubmesh.indexCount,
                                       indexType: glowSubmesh.indexType,
                                       indexBuffer: glowSubmesh.indexBuffer.buffer,
                                       indexBufferOffset: glowSubmesh.indexBuffer.offset)
+        
+        
         encoder.endEncoding()
         buffer.present(drawable)
         
@@ -478,5 +494,15 @@ extension simd_float4x4 {
                       SIMD4<Float>(0, sy,  0,  0),
                       SIMD4<Float>(0,  0, sz, -1),
                       SIMD4<Float>(0,  0, tz,  0))
+        }
+    
+    init(lookAt at: SIMD3<Float>, from: SIMD3<Float>, up: SIMD3<Float>) {
+            let zNeg = normalize(at - from)
+            let x = normalize(cross(zNeg, up))
+            let y = normalize(cross(x, zNeg))
+            self.init(SIMD4<Float>(x, 0),
+                      SIMD4<Float>(y, 0),
+                      SIMD4<Float>(-zNeg, 0),
+                      SIMD4<Float>(from, 1))
         }
 }
