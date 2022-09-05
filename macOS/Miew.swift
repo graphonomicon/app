@@ -217,7 +217,7 @@ final class Miew: MTKView {
         var sphereTransform = viewMatrix * (rotate * matrix_identity_float4x4)
         
         
-        encoder.setVertexBuffer(glowMesh.vertexBuffers[0].buffer, offset: 0, index: 0)
+//        encoder.setVertexBuffer(glowMesh.vertexBuffers[0].buffer, offset: 0, index: 0)
         
         var glowTransform = simd_float4x4(lookAt: SIMD3<Float>(0, 0, 0), from: SIMD3<Float>(0, 0, 0), up: SIMD3<Float>(0, 1, 0))
         
@@ -227,17 +227,19 @@ final class Miew: MTKView {
         
         
         pointer = constants.contents().advanced(by: index)
-        index += MemoryLayout<simd_float4x4>.size
+        
         
         pointer.copyMemory(from: &sphereTransform, byteCount: MemoryLayout<simd_float4x4>.size)
         encoder.setVertexBuffer(constants, offset: index, index: 1)
         
-        pointer = constants.contents().advanced(by: index)
-        pointer.copyMemory(from: &glowTransform, byteCount: MemoryLayout<simd_float4x4>.size)
+        index += MemoryLayout<simd_float4x4>.size
+        
+//        pointer = constants.contents().advanced(by: index)
+//        pointer.copyMemory(from: &glowTransform, byteCount: MemoryLayout<simd_float4x4>.size)
         
         
         // node
-        encoder.setVertexBuffer(constants, offset: index, index: 1)
+//        encoder.setVertexBuffer(constants, offset: index, index: 1)
         
         
         
@@ -253,7 +255,7 @@ final class Miew: MTKView {
         
         
         
-        encoder.setVertexBuffer(constants, offset: index, index: 1)
+//        encoder.setVertexBuffer(constants, offset: index, index: 1)
         encoder.setFragmentTexture(sphereTexture, index: 0)
         
         encoder.setFragmentSamplerState(sampler, index: 0)
@@ -265,15 +267,15 @@ final class Miew: MTKView {
                                       indexBufferOffset: sphereSubmesh.indexBuffer.offset)
         
         
-        encoder.setVertexBuffer(constants, offset: index, index: 1)
-        encoder.setFragmentTexture(glowTexture, index: 0)
-        encoder.setFragmentSamplerState(sampler, index: 0)
+//        encoder.setVertexBuffer(constants, offset: index, index: 1)
+//        encoder.setFragmentTexture(glowTexture, index: 0)
+//        encoder.setFragmentSamplerState(sampler, index: 0)
         
-        encoder.drawIndexedPrimitives(type: glowSubmesh.primitiveType,
-                                      indexCount: glowSubmesh.indexCount,
-                                      indexType: glowSubmesh.indexType,
-                                      indexBuffer: glowSubmesh.indexBuffer.buffer,
-                                      indexBufferOffset: glowSubmesh.indexBuffer.offset)
+//        encoder.drawIndexedPrimitives(type: glowSubmesh.primitiveType,
+//                                      indexCount: glowSubmesh.indexCount,
+//                                      indexType: glowSubmesh.indexType,
+//                                      indexBuffer: glowSubmesh.indexBuffer.buffer,
+//                                      indexBufferOffset: glowSubmesh.indexBuffer.offset)
         
         
         encoder.endEncoding()
@@ -291,7 +293,8 @@ final class Miew: MTKView {
         count += 1
     }
     
-    private func tick() {
+    /*private func tick() {
+        fatalError()
         time += (1.0 / Double(preferredFramesPerSecond))
         let t = Float(time)
         
@@ -384,7 +387,7 @@ final class Miew: MTKView {
 //                let constants = constants.contents().advanced(by: (count % 3) * (MemoryLayout<simd_float4x4>.size * 256))
 //                constants.copyMemory(from: &transformMatrix, byteCount: MemoryLayout<simd_float4x4>.size)
     }
-    
+    */
     private static var image: CGImage {
         
         let context = CGContext(data: nil,
