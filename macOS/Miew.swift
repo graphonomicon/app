@@ -133,7 +133,8 @@ final class Miew: MTKView {
             let buffer = queue.makeCommandBuffer(),
             let pass = currentRenderPassDescriptor,
             let encoder = buffer.makeRenderCommandEncoder(descriptor: pass),
-            let submesh = sphereMesh.submeshes.first,
+            let sphereSubmesh = sphereMesh.submeshes.first,
+            let glowSubmesh = glowMesh.submeshes.first,
             let drawable = currentDrawable
         else { return }
         
@@ -245,13 +246,20 @@ final class Miew: MTKView {
         
         
         encoder.setFragmentTexture(sphereTexture, index: 0)
+        encoder.setFragmentTexture(glowTexture, index: 1)
         encoder.setFragmentSamplerState(sampler, index: 0)
         
-        encoder.drawIndexedPrimitives(type: submesh.primitiveType,
-                                      indexCount: submesh.indexCount,
-                                      indexType: submesh.indexType,
-                                      indexBuffer: submesh.indexBuffer.buffer,
-                                      indexBufferOffset: submesh.indexBuffer.offset)
+        encoder.drawIndexedPrimitives(type: sphereSubmesh.primitiveType,
+                                      indexCount: sphereSubmesh.indexCount,
+                                      indexType: sphereSubmesh.indexType,
+                                      indexBuffer: sphereSubmesh.indexBuffer.buffer,
+                                      indexBufferOffset: sphereSubmesh.indexBuffer.offset)
+        
+        encoder.drawIndexedPrimitives(type: glowSubmesh.primitiveType,
+                                      indexCount: glowSubmesh.indexCount,
+                                      indexType: glowSubmesh.indexType,
+                                      indexBuffer: glowSubmesh.indexBuffer.buffer,
+                                      indexBufferOffset: glowSubmesh.indexBuffer.offset)
         encoder.endEncoding()
         buffer.present(drawable)
         
