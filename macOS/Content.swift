@@ -15,7 +15,7 @@ final class Content: NSView {
         
         guard
             let device = MTLCreateSystemDefaultDevice(),
-            let view = Miew(device: device)
+            let view = Miew2(device: device)
         else { return }
         addSubview(view)
     }

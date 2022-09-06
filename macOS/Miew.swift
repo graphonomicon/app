@@ -219,7 +219,7 @@ final class Miew: MTKView {
         
 //
         
-        var glowTransform = simd_float4x4(lookAt: SIMD3<Float>(0, 0, 0), from: SIMD3<Float>(0, 0, 0), up: SIMD3<Float>(0, 1, 0))
+        var glowTransform = simd_float4x4(lookAt: SIMD3<Float>(0, 0, 5), from: SIMD3<Float>(0, 0, 0), up: SIMD3<Float>(0, 1, 0))
         
         
         
@@ -229,8 +229,8 @@ final class Miew: MTKView {
         pointer = constants.contents().advanced(by: index)
         
         
-        pointer.copyMemory(from: &sphereTransform, byteCount: MemoryLayout<simd_float4x4>.size)
-        encoder.setVertexBuffer(constants, offset: index, index: 1)
+//        pointer.copyMemory(from: &sphereTransform, byteCount: MemoryLayout<simd_float4x4>.size)
+//        encoder.setVertexBuffer(constants, offset: index, index: 1)
         
         
         
@@ -253,18 +253,18 @@ final class Miew: MTKView {
         
         
 //        encoder.setVertexBuffer(constants, offset: index, index: 1)
-        encoder.setFragmentTexture(sphereTexture, index: 0)
+//        encoder.setFragmentTexture(sphereTexture, index: 0)
         
-        encoder.setFragmentSamplerState(sampler, index: 0)
+//        encoder.setFragmentSamplerState(sampler, index: 0)
         
-        encoder.drawIndexedPrimitives(type: sphereSubmesh.primitiveType,
-                                      indexCount: sphereSubmesh.indexCount,
-                                      indexType: sphereSubmesh.indexType,
-                                      indexBuffer: sphereSubmesh.indexBuffer.buffer,
-                                      indexBufferOffset: sphereSubmesh.indexBuffer.offset)
+//        encoder.drawIndexedPrimitives(type: sphereSubmesh.primitiveType,
+//                                      indexCount: sphereSubmesh.indexCount,
+//                                      indexType: sphereSubmesh.indexType,
+//                                      indexBuffer: sphereSubmesh.indexBuffer.buffer,
+//                                      indexBufferOffset: sphereSubmesh.indexBuffer.offset)
         
         
-        index += MemoryLayout<simd_float4x4>.size
+//        index += MemoryLayout<simd_float4x4>.size
         
         pointer = constants.contents().advanced(by: index)
         pointer.copyMemory(from: &glowTransform, byteCount: MemoryLayout<simd_float4x4>.size)
