@@ -217,7 +217,7 @@ final class Miew: MTKView {
         var sphereTransform = viewMatrix * (rotate * matrix_identity_float4x4)
         
         
-//        encoder.setVertexBuffer(glowMesh.vertexBuffers[0].buffer, offset: 0, index: 0)
+//
         
         var glowTransform = simd_float4x4(lookAt: SIMD3<Float>(0, 0, 0), from: SIMD3<Float>(0, 0, 0), up: SIMD3<Float>(0, 1, 0))
         
@@ -232,10 +232,7 @@ final class Miew: MTKView {
         pointer.copyMemory(from: &sphereTransform, byteCount: MemoryLayout<simd_float4x4>.size)
         encoder.setVertexBuffer(constants, offset: index, index: 1)
         
-        index += MemoryLayout<simd_float4x4>.size
         
-//        pointer = constants.contents().advanced(by: index)
-//        pointer.copyMemory(from: &glowTransform, byteCount: MemoryLayout<simd_float4x4>.size)
         
         
         // node
@@ -267,15 +264,24 @@ final class Miew: MTKView {
                                       indexBufferOffset: sphereSubmesh.indexBuffer.offset)
         
         
-//        encoder.setVertexBuffer(constants, offset: index, index: 1)
-//        encoder.setFragmentTexture(glowTexture, index: 0)
-//        encoder.setFragmentSamplerState(sampler, index: 0)
+        index += MemoryLayout<simd_float4x4>.size
         
-//        encoder.drawIndexedPrimitives(type: glowSubmesh.primitiveType,
-//                                      indexCount: glowSubmesh.indexCount,
-//                                      indexType: glowSubmesh.indexType,
-//                                      indexBuffer: glowSubmesh.indexBuffer.buffer,
-//                                      indexBufferOffset: glowSubmesh.indexBuffer.offset)
+        pointer = constants.contents().advanced(by: index)
+        pointer.copyMemory(from: &glowTransform, byteCount: MemoryLayout<simd_float4x4>.size)
+        
+        
+        
+        encoder.setVertexBuffer(glowMesh.vertexBuffers[0].buffer, offset: 0, index: 0)
+        
+        encoder.setVertexBuffer(constants, offset: index, index: 1)
+        encoder.setFragmentTexture(glowTexture, index: 0)
+        encoder.setFragmentSamplerState(sampler, index: 0)
+        
+        encoder.drawIndexedPrimitives(type: glowSubmesh.primitiveType,
+                                      indexCount: glowSubmesh.indexCount,
+                                      indexType: glowSubmesh.indexType,
+                                      indexBuffer: glowSubmesh.indexBuffer.buffer,
+                                      indexBufferOffset: glowSubmesh.indexBuffer.offset)
         
         
         encoder.endEncoding()
