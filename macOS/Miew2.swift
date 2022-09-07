@@ -17,13 +17,13 @@ final class Miew2: MTKView {
             let constants = device.makeBuffer(length: bufferSize * 3, options: .storageModeShared),
             let vertex = library.makeFunction(name: "vertex_main"),
             let fragment = library.makeFunction(name: "fragment_main"),
-            let sphereMesh = try? MTKMesh(mesh:
-                    .init(sphereWithExtent: .init(x: 1, y: 1, z: 1),
-                          segments: [128, 128],
-                          inwardNormals: false,
+            let glowMesh = try? MTKMesh(mesh:
+                    .init(planeWithExtent: SIMD3<Float>(1.05, 1.05, 0.0),
+                          segments: SIMD2<UInt32>(1, 1),
                           geometryType: .triangles,
                           allocator: bufferAllocator),
-                                          device: device)
+                                        device: device),
+            let glowTexture = try? textureLoader.newTexture(name: "Sphere", scaleFactor: 1, bundle: nil, options: options)
         else { return nil }
         
         let pipeline = MTLRenderPipelineDescriptor()
@@ -31,7 +31,7 @@ final class Miew2: MTKView {
         pipeline.depthAttachmentPixelFormat = .depth32Float
         pipeline.vertexFunction = vertex
         pipeline.fragmentFunction = fragment
-        pipeline.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(sphereMesh.vertexDescriptor)
+        pipeline.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(glowMesh.vertexDescriptor)
         
         let depth = MTLDepthStencilDescriptor()
         depth.isDepthWriteEnabled = true
@@ -51,5 +51,11 @@ final class Miew2: MTKView {
             let depth = device.makeDepthStencilState(descriptor: depth),
             let sampler = device.makeSamplerState(descriptor: samplerDescriptor)
         else { return nil }
+        
+        super.init(frame: .init(origin: .zero,
+                                size: .init(width: 800, height: 800)),
+                   device: device)
+        depthStencilPixelFormat = .depth32Float
+        clearColor = .init(red: 1, green: 1, blue: 1, alpha: 1)
     }
 }
