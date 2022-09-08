@@ -3,6 +3,17 @@ import MetalKit
 private let bufferSize = 32_768
 
 final class Miew2: MTKView {
+    private var time = TimeInterval()
+    private var count = Int()
+    private let queue: MTLCommandQueue
+    private let state: MTLRenderPipelineState
+    private let glowMesh: MTKMesh
+    private let constants: MTLBuffer
+    private let depth: MTLDepthStencilState
+    private let semaphore = DispatchSemaphore(value: 3)
+    private let sampler: MTLSamplerState
+    private let glowTexture: MTLTexture
+    
     required init(coder: NSCoder) { fatalError() }
     init?(device: MTLDevice) {
         let bufferAllocator = MTKMeshBufferAllocator(device: device)
@@ -51,6 +62,14 @@ final class Miew2: MTKView {
             let depth = device.makeDepthStencilState(descriptor: depth),
             let sampler = device.makeSamplerState(descriptor: samplerDescriptor)
         else { return nil }
+        
+        self.queue = queue
+        self.state = state
+        self.glowMesh = glowMesh
+        self.constants = constants
+        self.depth = depth
+        self.sampler = sampler
+        self.glowTexture = glowTexture
         
         super.init(frame: .init(origin: .zero,
                                 size: .init(width: 800, height: 800)),
