@@ -36,7 +36,7 @@ vertex VertexOut vertex_main(const VertexIn in [[ stage_in ]],
     
     VertexOut out;
     out.position = frame.projection * view;
-    out.position = float4(in.position, 1);
+//    out.position = view;
     
 //    vertex_out.position = float4(vertex_in.position, 1);
 //    vertex_out.color = float4(vertex_in.texture, 1, 1);

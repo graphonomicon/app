@@ -28,7 +28,7 @@ final class Miew2: MTKView {
             .textureStorageMode : MTLStorageMode.private.rawValue]
         
         let glowPlane = MDLMesh(planeWithExtent: SIMD3<Float>(1.05, 1.05, 0),
-                              segments: SIMD2<UInt32>(128, 128),
+                              segments: SIMD2<UInt32>(1, 1),
                               geometryType: .triangles,
                               allocator: bufferAllocator)
         
@@ -40,7 +40,7 @@ final class Miew2: MTKView {
             let vertex = library.makeFunction(name: "vertex_main"),
             let fragment = library.makeFunction(name: "fragment_main"),
             let glowMesh = try? MTKMesh(mesh: glowPlane, device: device),
-            let glowTexture = try? textureLoader.newTexture(name: "Sphere", scaleFactor: 1, bundle: nil, options: options)
+            let glowTexture = try? textureLoader.newTexture(name: "Glow", scaleFactor: 1, bundle: nil, options: options)
         else { return nil }
         
         let pipeline = MTLRenderPipelineDescriptor()
@@ -110,10 +110,12 @@ final class Miew2: MTKView {
         pointer.copyMemory(from: &frame, byteCount: MemoryLayout<simd_float4x4>.size)
         
         encoder.setVertexBuffer(constants, offset: index, index: 2)
-        encoder.setFragmentBuffer(constants, offset: index, index: 0)
         
-        var glowTransform = simd_float4x4(lookAt: SIMD3<Float>(0, 0, 0), from: SIMD3<Float>(0, 0, 0), up: SIMD3<Float>(0, 1, 0))
-        
+        var glowTransform = frame.inverse
+//        glowTransform = simd_float4x4(lookAt: SIMD3<Float>(0,
+//                                                           0,
+//                                                           matrix_identity_float4x4.columns.3.z), from: SIMD3<Float>(0, 0, 0), up: SIMD3<Float>(0, 1, 0))
+//        
         index += MemoryLayout<simd_float4x4>.size
         pointer = constants.contents().advanced(by: index)
         pointer.copyMemory(from: &glowTransform, byteCount: MemoryLayout<simd_float4x4>.size)
