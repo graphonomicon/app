@@ -5,6 +5,7 @@ private let bufferSize = 32_768
 final class Miew2: MTKView {
     private var time = TimeInterval()
     private var count = Int()
+    private var nodes = [Node]()
     private let queue: MTLCommandQueue
     private let state: MTLRenderPipelineState
     private let glowMesh: MTKMesh
