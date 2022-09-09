@@ -17,6 +17,7 @@
 		CE6B356C28BCCC4400DA59F5 /* Miew.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6B356B28BCCC4400DA59F5 /* Miew.swift */; };
 		CE86603528C3527300ECE1D7 /* Textures.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE86603428C3527300ECE1D7 /* Textures.xcassets */; };
 		CE8C5C8A28CB992D00CDC1A9 /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8C5C8928CB992D00CDC1A9 /* Node.swift */; };
+		CE8C5C8C28CBA0A900CDC1A9 /* MTLDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8C5C8B28CBA0A900CDC1A9 /* MTLDevice.swift */; };
 		CEE5485728C7FC47004671BB /* Miew2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE5485628C7FC47004671BB /* Miew2.swift */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +33,7 @@
 		CE6B356D28BCCF7D00DA59F5 /* Shades.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shades.metal; sourceTree = "<group>"; };
 		CE86603428C3527300ECE1D7 /* Textures.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Textures.xcassets; sourceTree = "<group>"; };
 		CE8C5C8928CB992D00CDC1A9 /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
+		CE8C5C8B28CBA0A900CDC1A9 /* MTLDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTLDevice.swift; sourceTree = "<group>"; };
 		CECC714F28BB8CE8001D78E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CEE5485628C7FC47004671BB /* Miew2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Miew2.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,6 +88,7 @@
 		CE86603328C3525E00ECE1D7 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				CE8C5C8B28CBA0A900CDC1A9 /* MTLDevice.swift */,
 				CE86603428C3527300ECE1D7 /* Textures.xcassets */,
 			);
 			path = Shared;
@@ -173,6 +176,7 @@
 				CE8C5C8A28CB992D00CDC1A9 /* Node.swift in Sources */,
 				CE09AF6B28BCED61009EF382 /* Shades.metal in Sources */,
 				CE6B356728BCC39A00DA59F5 /* Content.swift in Sources */,
+				CE8C5C8C28CBA0A900CDC1A9 /* MTLDevice.swift in Sources */,
 				CE6B356C28BCCC4400DA59F5 /* Miew.swift in Sources */,
 				CEE5485728C7FC47004671BB /* Miew2.swift in Sources */,
 			);

@@ -3,17 +3,16 @@ import MetalKit
 private let bufferSize = 32_768
 
 final class Miew2: MTKView {
+    private weak var glow: Node?
     private var time = TimeInterval()
     private var count = Int()
-    private var nodes = [Node]()
+    private var nodes: [Node]
     private let queue: MTLCommandQueue
     private let state: MTLRenderPipelineState
-    private let glowMesh: MTKMesh
     private let constants: MTLBuffer
     private let depth: MTLDepthStencilState
     private let semaphore = DispatchSemaphore(value: 3)
     private let sampler: MTLSamplerState
-    private let glowTexture: MTLTexture
     
     required init(coder: NSCoder) { fatalError() }
     init?(device: MTLDevice) {
@@ -24,24 +23,18 @@ final class Miew2: MTKView {
         scatter.metallic.floatValue = 0
         scatter.clearcoatGloss.floatValue = 1
         
-        let options: [MTKTextureLoader.Option : Any] = [
+        let textureOptions: [MTKTextureLoader.Option : Any] = [
             .textureUsage : MTLTextureUsage.shaderRead.rawValue,
             .textureStorageMode : MTLStorageMode.private.rawValue]
         
-        let glowPlane = MDLMesh(planeWithExtent: SIMD3<Float>(1.05, 1.05, 0),
-                              segments: SIMD2<UInt32>(1, 1),
-                              geometryType: .triangles,
-                              allocator: bufferAllocator)
-        
-        (glowPlane.submeshes?.firstObject as! MDLSubmesh).material = .init(name: "", scatteringFunction: scatter)
-        
         guard
+            let glow = device.glow(bufferAllocator: bufferAllocator,
+                                   textureLoader: textureLoader,
+                                   textureOptions: textureOptions),
             let library = device.makeDefaultLibrary(),
             let constants = device.makeBuffer(length: bufferSize * 3, options: .storageModeShared),
             let vertex = library.makeFunction(name: "vertex_main"),
-            let fragment = library.makeFunction(name: "fragment_main"),
-            let glowMesh = try? MTKMesh(mesh: glowPlane, device: device),
-            let glowTexture = try? textureLoader.newTexture(name: "Glow", scaleFactor: 1, bundle: nil, options: options)
+            let fragment = library.makeFunction(name: "fragment_main")
         else { return nil }
         
         let pipeline = MTLRenderPipelineDescriptor()
@@ -49,7 +42,7 @@ final class Miew2: MTKView {
         pipeline.depthAttachmentPixelFormat = .depth32Float
         pipeline.vertexFunction = vertex
         pipeline.fragmentFunction = fragment
-        pipeline.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(glowMesh.vertexDescriptor)
+        pipeline.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(glow.mesh.vertexDescriptor)
         
         let depth = MTLDepthStencilDescriptor()
         depth.isDepthWriteEnabled = true
@@ -72,11 +65,11 @@ final class Miew2: MTKView {
         
         self.queue = queue
         self.state = state
-        self.glowMesh = glowMesh
         self.constants = constants
         self.depth = depth
         self.sampler = sampler
-        self.glowTexture = glowTexture
+        self.glow = glow
+        nodes = [glow]
         
         super.init(frame: .init(origin: .zero,
                                 size: .init(width: 800, height: 800)),
@@ -90,7 +83,6 @@ final class Miew2: MTKView {
             let buffer = queue.makeCommandBuffer(),
             let pass = currentRenderPassDescriptor,
             let encoder = buffer.makeRenderCommandEncoder(descriptor: pass),
-            let glowSubmesh = glowMesh.submeshes.first,
             let drawable = currentDrawable
         else { return }
         
@@ -109,29 +101,32 @@ final class Miew2: MTKView {
         var index = (count % 3) * bufferSize
         var pointer = constants.contents().advanced(by: index)
         pointer.copyMemory(from: &frame, byteCount: MemoryLayout<simd_float4x4>.size)
-        
         encoder.setVertexBuffer(constants, offset: index, index: 2)
-        
-        var glowTransform = frame.inverse
-//        glowTransform = simd_float4x4(lookAt: SIMD3<Float>(0,
-//                                                           0,
-//                                                           matrix_identity_float4x4.columns.3.z), from: SIMD3<Float>(0, 0, 0), up: SIMD3<Float>(0, 1, 0))
-//        
         index += MemoryLayout<simd_float4x4>.size
-        pointer = constants.contents().advanced(by: index)
-        pointer.copyMemory(from: &glowTransform, byteCount: MemoryLayout<simd_float4x4>.size)
         
-        encoder.setVertexBuffer(constants, offset: index, index: 1)
-        encoder.setVertexBuffer(glowMesh.vertexBuffers[0].buffer, offset: 0, index: 0)
-        encoder.setFragmentTexture(glowTexture, index: 0)
-        encoder.setFragmentSamplerState(sampler, index: 0)
+        glow?.transform = frame.inverse
         
-        encoder.drawIndexedPrimitives(type: glowSubmesh.primitiveType,
-                                      indexCount: glowSubmesh.indexCount,
-                                      indexType: glowSubmesh.indexType,
-                                      indexBuffer: glowSubmesh.indexBuffer.buffer,
-                                      indexBufferOffset: glowSubmesh.indexBuffer.offset)
-        
+        nodes
+            .forEach { node in
+                guard let submesh = node.mesh.submeshes.first else { return }
+                
+                var transform = node.worldTransform
+                pointer = constants.contents().advanced(by: index)
+                pointer.copyMemory(from: &transform, byteCount: MemoryLayout<simd_float4x4>.size)
+                encoder.setVertexBuffer(constants, offset: index, index: 1)
+                index += MemoryLayout<simd_float4x4>.size
+                
+                encoder.setVertexBuffer(node.mesh.vertexBuffers[0].buffer, offset: 0, index: 0)
+                encoder.setFragmentTexture(node.texture, index: 0)
+                encoder.setFragmentSamplerState(sampler, index: 0)
+                
+                encoder.drawIndexedPrimitives(type: submesh.primitiveType,
+                                              indexCount: submesh.indexCount,
+                                              indexType: submesh.indexType,
+                                              indexBuffer: submesh.indexBuffer.buffer,
+                                              indexBufferOffset: submesh.indexBuffer.offset)
+            }
+
         encoder.endEncoding()
         buffer.present(drawable)
         
