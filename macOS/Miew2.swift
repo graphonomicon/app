@@ -3,6 +3,7 @@ import MetalKit
 private let bufferSize = 32_768
 
 final class Miew2: MTKView {
+    private weak var sphere: Node?
     private weak var glow: Node?
     private var time = TimeInterval()
     private var count = Int()
@@ -28,9 +29,14 @@ final class Miew2: MTKView {
             .textureStorageMode : MTLStorageMode.private.rawValue]
         
         guard
-            let glow = device.glow(bufferAllocator: bufferAllocator,
-                                   textureLoader: textureLoader,
-                                   textureOptions: textureOptions),
+            let sphere = Node.sphere(device: device,
+                                     bufferAllocator: bufferAllocator,
+                                     textureLoader: textureLoader,
+                                     textureOptions: textureOptions),
+            let glow = Node.glow(device: device,
+                                 bufferAllocator: bufferAllocator,
+                                 textureLoader: textureLoader,
+                                 textureOptions: textureOptions),
             let library = device.makeDefaultLibrary(),
             let constants = device.makeBuffer(length: bufferSize * 3, options: .storageModeShared),
             let vertex = library.makeFunction(name: "vertex_main"),
@@ -40,6 +46,13 @@ final class Miew2: MTKView {
         let pipeline = MTLRenderPipelineDescriptor()
         pipeline.colorAttachments[0].pixelFormat = .bgra8Unorm
         pipeline.depthAttachmentPixelFormat = .depth32Float
+        pipeline.colorAttachments[0].isBlendingEnabled = true
+        pipeline.colorAttachments[0].sourceRGBBlendFactor = .one
+        pipeline.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        pipeline.colorAttachments[0].rgbBlendOperation = .add
+        pipeline.colorAttachments[0].sourceAlphaBlendFactor = .one
+        pipeline.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
+        pipeline.colorAttachments[0].alphaBlendOperation = .add
         pipeline.vertexFunction = vertex
         pipeline.fragmentFunction = fragment
         pipeline.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(glow.mesh.vertexDescriptor)
@@ -68,8 +81,9 @@ final class Miew2: MTKView {
         self.constants = constants
         self.depth = depth
         self.sampler = sampler
+        self.sphere = sphere
         self.glow = glow
-        nodes = [glow]
+        nodes = [glow, sphere]
         
         super.init(frame: .init(origin: .zero,
                                 size: .init(width: 800, height: 800)),
@@ -104,6 +118,13 @@ final class Miew2: MTKView {
         encoder.setVertexBuffer(constants, offset: index, index: 2)
         index += MemoryLayout<simd_float4x4>.size
         
+        let cameraPosition = SIMD3<Float>(0, 0, 5)
+        let viewMatrix = simd_float4x4(translate: -cameraPosition)
+        let xAxis = SIMD3<Float>(1, 0, 0)
+        let yAxis = SIMD3<Float>(0, 1, 0)
+        let rotate = simd_float4x4(rotateAbout: yAxis, byAngle: .init(time))
+        
+        sphere?.transform = viewMatrix * (rotate * matrix_identity_float4x4)
         glow?.transform = frame.inverse
         
         nodes
