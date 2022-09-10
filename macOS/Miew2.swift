@@ -83,7 +83,7 @@ final class Miew2: MTKView {
         self.sampler = sampler
         self.sphere = sphere
         self.glow = glow
-        nodes = [sphere, glow]
+        nodes = [glow, sphere]
         
         super.init(frame: .init(origin: .zero,
                                 size: .init(width: 800, height: 800)),
@@ -132,7 +132,6 @@ final class Miew2: MTKView {
         nodes
             .forEach { node in
                 guard let submesh = node.mesh.submeshes.first else { return }
-                
                 var transform = node.worldTransform
                 pointer = constants.contents().advanced(by: index)
                 pointer.copyMemory(from: &transform, byteCount: MemoryLayout<simd_float4x4>.size)
