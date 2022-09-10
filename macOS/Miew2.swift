@@ -44,7 +44,7 @@ final class Miew2: MTKView {
         else { return nil }
         
         let pipeline = MTLRenderPipelineDescriptor()
-        pipeline.colorAttachments[0].pixelFormat = .bgra8Unorm
+        pipeline.colorAttachments[0].pixelFormat = .bgra8Unorm_srgb
         pipeline.depthAttachmentPixelFormat = .depth32Float
         pipeline.colorAttachments[0].isBlendingEnabled = true
         pipeline.colorAttachments[0].sourceRGBBlendFactor = .one
@@ -55,14 +55,14 @@ final class Miew2: MTKView {
         pipeline.colorAttachments[0].alphaBlendOperation = .add
         pipeline.vertexFunction = vertex
         pipeline.fragmentFunction = fragment
-        pipeline.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(glow.mesh.vertexDescriptor)
+        pipeline.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(sphere.mesh.vertexDescriptor)
         
         let depth = MTLDepthStencilDescriptor()
         depth.isDepthWriteEnabled = true
         depth.depthCompareFunction = .less
         
         let samplerDescriptor = MTLSamplerDescriptor()
-                samplerDescriptor.normalizedCoordinates = true
+        samplerDescriptor.normalizedCoordinates = true
         samplerDescriptor.magFilter = .linear
         samplerDescriptor.minFilter = .linear
         samplerDescriptor.mipFilter = .nearest
@@ -83,13 +83,15 @@ final class Miew2: MTKView {
         self.sampler = sampler
         self.sphere = sphere
         self.glow = glow
-        nodes = [glow, sphere]
+        nodes = [sphere, glow]
         
         super.init(frame: .init(origin: .zero,
                                 size: .init(width: 800, height: 800)),
                    device: device)
+        colorPixelFormat = .bgra8Unorm_srgb
         depthStencilPixelFormat = .depth32Float
         clearColor = .init(red: 1, green: 1, blue: 1, alpha: 1)
+        sampleCount = 1
     }
     
     override func draw(_ dirtyRect: NSRect) {

@@ -30,7 +30,7 @@ final class Node {
                     textureLoader: MTKTextureLoader,
                     textureOptions: [MTKTextureLoader.Option : Any]) -> Self? {
         
-        let plane = MDLMesh(planeWithExtent: SIMD3<Float>(1.05, 1.05, 0),
+        let plane = MDLMesh(planeWithExtent: SIMD3<Float>(1.5, 1.5, 0),
                             segments: SIMD2<UInt32>(1, 1),
                             geometryType: .triangles,
                             allocator: bufferAllocator)
