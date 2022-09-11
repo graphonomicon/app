@@ -46,7 +46,7 @@ final class Miew2: MTKView {
         let pipeline = MTLRenderPipelineDescriptor()
         pipeline.colorAttachments[0].pixelFormat = .bgra8Unorm_srgb
         pipeline.depthAttachmentPixelFormat = .depth32Float
-        pipeline.colorAttachments[0].isBlendingEnabled = true
+        pipeline.colorAttachments[0].isBlendingEnabled = false
         pipeline.colorAttachments[0].sourceRGBBlendFactor = .one
         pipeline.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
         pipeline.colorAttachments[0].rgbBlendOperation = .add
@@ -65,7 +65,10 @@ final class Miew2: MTKView {
         samplerDescriptor.normalizedCoordinates = true
         samplerDescriptor.magFilter = .linear
         samplerDescriptor.minFilter = .linear
-        samplerDescriptor.mipFilter = .nearest
+        samplerDescriptor.mipFilter = .linear
+//        samplerDescriptor.sAddressMode = .repeat
+//        samplerDescriptor.tAddressMode = .repeat
+//        samplerDescriptor.mipFilter = .nearest
         samplerDescriptor.sAddressMode = .clampToEdge
         samplerDescriptor.tAddressMode = .clampToEdge
         
@@ -83,7 +86,7 @@ final class Miew2: MTKView {
         self.sampler = sampler
         self.sphere = sphere
         self.glow = glow
-        nodes = [sphere, glow]
+        nodes = [glow, sphere]
         
         super.init(frame: .init(origin: .zero,
                                 size: .init(width: 800, height: 800)),
@@ -125,9 +128,10 @@ final class Miew2: MTKView {
         let xAxis = SIMD3<Float>(1, 0, 0)
         let yAxis = SIMD3<Float>(0, 1, 0)
         let rotate = simd_float4x4(rotateAbout: yAxis, byAngle: .init(time))
+        let sendBack = simd_float4x4(translate: .init(0, 0, -2.7))
         
         sphere?.transform = viewMatrix * (rotate * matrix_identity_float4x4)
-        glow?.transform = frame.inverse
+        glow?.transform = viewMatrix * sendBack
         
         nodes
             .forEach { node in
