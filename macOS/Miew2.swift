@@ -83,13 +83,13 @@ final class Miew2: MTKView {
         self.sampler = sampler
         self.sphere = sphere
         self.glow = glow
-        nodes = [glow, sphere]
+        nodes = [sphere, glow]
         
         super.init(frame: .init(origin: .zero,
                                 size: .init(width: 800, height: 800)),
                    device: device)
-        colorPixelFormat = .bgra8Unorm_srgb
-        depthStencilPixelFormat = .depth32Float
+        colorPixelFormat = pipeline.colorAttachments[0].pixelFormat
+        depthStencilPixelFormat = pipeline.depthAttachmentPixelFormat
         clearColor = .init(red: 1, green: 1, blue: 1, alpha: 1)
         sampleCount = 1
     }
