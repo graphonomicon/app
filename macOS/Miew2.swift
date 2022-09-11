@@ -5,6 +5,7 @@ private let bufferSize = 32_768
 final class Miew2: MTKView {
     private weak var sphere: Node?
     private weak var glow: Node?
+    private weak var node: Node?
     private var time = TimeInterval()
     private var count = Int()
     private var nodes: [Node]
@@ -34,6 +35,10 @@ final class Miew2: MTKView {
                                      textureLoader: textureLoader,
                                      textureOptions: textureOptions),
             let glow = Node.glow(device: device,
+                                 bufferAllocator: bufferAllocator,
+                                 textureLoader: textureLoader,
+                                 textureOptions: textureOptions),
+            let node = Node.node(device: device,
                                  bufferAllocator: bufferAllocator,
                                  textureLoader: textureLoader,
                                  textureOptions: textureOptions),
@@ -86,7 +91,9 @@ final class Miew2: MTKView {
         self.sampler = sampler
         self.sphere = sphere
         self.glow = glow
-        nodes = [glow, sphere]
+        self.node = node
+        node.parent = sphere
+        nodes = [glow, sphere, node]
         
         super.init(frame: .init(origin: .zero,
                                 size: .init(width: 800, height: 800)),
@@ -131,7 +138,8 @@ final class Miew2: MTKView {
         let sendBack = simd_float4x4(translate: .init(0, 0, -2.7))
         
         sphere?.transform = viewMatrix * (rotate * matrix_identity_float4x4)
-        glow?.transform = viewMatrix * sendBack
+        glow?.transform = frame * viewMatrix
+        node?.transform = frame * (simd_float4x4(translate: .init(0, 0, -5)) * matrix_identity_float4x4)
         
         nodes
             .forEach { node in

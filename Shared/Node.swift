@@ -43,6 +43,24 @@ final class Node {
         return .init(mesh: mesh, texture: texture)
     }
     
+    class func node(device: MTLDevice,
+                    bufferAllocator: MTKMeshBufferAllocator,
+                    textureLoader: MTKTextureLoader,
+                    textureOptions: [MTKTextureLoader.Option : Any]) -> Self? {
+        
+        let plane = MDLMesh(planeWithExtent: SIMD3<Float>(1, 1, 0),
+                            segments: SIMD2<UInt32>(1, 1),
+                            geometryType: .triangles,
+                            allocator: bufferAllocator)
+        
+        guard
+            let mesh = try? MTKMesh(mesh: plane, device: device),
+            let texture = try? textureLoader.newTexture(name: "Node", scaleFactor: 1, bundle: nil, options: textureOptions)
+        else { return nil }
+        
+        return .init(mesh: mesh, texture: texture)
+    }
+    
     var worldTransform: simd_float4x4 {
         parent
             .map {
