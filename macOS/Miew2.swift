@@ -93,7 +93,7 @@ final class Miew2: MTKView {
         self.glow = glow
         self.node = node
         node.parent = sphere
-        nodes = [glow, sphere, node]
+        nodes = [sphere, glow, node]
         
         super.init(frame: .init(origin: .zero,
                                 size: .init(width: 800, height: 800)),
@@ -124,22 +124,28 @@ final class Miew2: MTKView {
                                                      near: 0.01,
                                                      far: 100)
         
+        let cameraPosition = SIMD3<Float>(0, 0, -5)
+        var view = simd_float4x4(translate: -cameraPosition)
+        
         var index = (count % 3) * bufferSize
         var pointer = constants.contents().advanced(by: index)
         pointer.copyMemory(from: &frame, byteCount: MemoryLayout<simd_float4x4>.size)
         encoder.setVertexBuffer(constants, offset: index, index: 2)
         index += MemoryLayout<simd_float4x4>.size
         
-        let cameraPosition = SIMD3<Float>(0, 0, 5)
-        let viewMatrix = simd_float4x4(translate: -cameraPosition)
+        pointer = constants.contents().advanced(by: index)
+        pointer.copyMemory(from: &view, byteCount: MemoryLayout<simd_float4x4>.size)
+        encoder.setVertexBuffer(constants, offset: index, index: 2)
+        index += MemoryLayout<simd_float4x4>.size
+        
         let xAxis = SIMD3<Float>(1, 0, 0)
         let yAxis = SIMD3<Float>(0, 1, 0)
         let rotate = simd_float4x4(rotateAbout: yAxis, byAngle: .init(time))
         let sendBack = simd_float4x4(translate: .init(0, 0, -2.7))
         
-        sphere?.transform = viewMatrix * (rotate * matrix_identity_float4x4)
-        glow?.transform = frame * viewMatrix
-        node?.transform = frame * (simd_float4x4(translate: .init(0, 0, -5)) * matrix_identity_float4x4)
+        sphere?.transform = rotate
+        glow?.transform = sendBack
+        node?.transform = matrix_identity_float4x4
         
         nodes
             .forEach { node in
