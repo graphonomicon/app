@@ -7,12 +7,6 @@ final class Layer: CALayer {
     private let graph = Puzzle.new(points: 30, length: 300)
     
     override func draw(in context: CGContext) {
-        context
-            .addRect(bounds)
-        
-        context.setFillColor(.white)
-        context.fillPath()
-        
         context.translateBy(x: bounds.midX, y: bounds.midY)
         
         graph

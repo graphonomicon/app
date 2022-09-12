@@ -11,6 +11,7 @@ final class Content: NSView {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
         layer = Layer()
+        layer!.backgroundColor = .white
         wantsLayer = true
 
         timer
