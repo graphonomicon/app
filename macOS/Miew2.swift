@@ -92,8 +92,8 @@ final class Miew2: MTKView {
         self.sphere = sphere
         self.glow = glow
         self.node = node
-        node.parent = sphere
-        nodes = [sphere, glow, node]
+//        node.parent = sphere
+        nodes = [node]
         
         super.init(frame: .init(origin: .zero,
                                 size: .init(width: 800, height: 800)),
@@ -119,13 +119,14 @@ final class Miew2: MTKView {
         encoder.setCullMode(.back)
         encoder.setDepthStencilState(depth)
         
+        
         var frame = simd_float4x4(perspectiveProjectionFoVY: .pi / 3,
                                                      aspectRatio: 1,
                                                      near: 0.01,
                                                      far: 100)
         
-        let cameraPosition = SIMD3<Float>(0, 0, -5)
-        var view = simd_float4x4(translate: -cameraPosition)
+        let cameraPosition = SIMD3<Float>(0, 0, 5)
+        var view = matrix_identity_float4x4.inverse//simd_float4x4(translate: -cameraPosition)
         
         var index = (count % 3) * bufferSize
         var pointer = constants.contents().advanced(by: index)
@@ -143,9 +144,11 @@ final class Miew2: MTKView {
         let rotate = simd_float4x4(rotateAbout: yAxis, byAngle: .init(time))
         let sendBack = simd_float4x4(translate: .init(0, 0, -2.7))
         
-        sphere?.transform = rotate
-        glow?.transform = sendBack
+        sphere?.transform = simd_float4x4(rotateAbout: SIMD3<Float>(0, 1, 0), byAngle: .init(time) * -0.5)
+        sphere?.transform = simd_float4x4(translate: .init(0, 0, -20))
+        glow?.transform = simd_float4x4(lookAt: matrix_identity_float4x4.columns.3.xyz, from: SIMD3<Float>(0, 0, 0), up: SIMD3<Float>(0, 1, 0))
         node?.transform = matrix_identity_float4x4
+//        node?.transform = simd_float4x4(translate: .init(0, -0.15, -0.5)) * matrix_identity_float4x4
         
         nodes
             .forEach { node in
@@ -177,5 +180,12 @@ final class Miew2: MTKView {
         
         buffer.commit()
         count += 1
+    }
+}
+
+
+extension SIMD4 {
+    var xyz: SIMD3<Scalar> {
+        return SIMD3<Scalar>(x, y, z)
     }
 }
