@@ -13,6 +13,7 @@
 		CE6B356528BCC33700DA59F5 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6B356428BCC33700DA59F5 /* Session.swift */; };
 		CE6B356728BCC39A00DA59F5 /* Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6B356628BCC39A00DA59F5 /* Content.swift */; };
 		CE6B356A28BCC3CC00DA59F5 /* Coffee in Frameworks */ = {isa = PBXBuildFile; productRef = CE6B356928BCC3CC00DA59F5 /* Coffee */; };
+		CEE51AF928CF7A4700DB1462 /* Layer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE51AF828CF7A4700DB1462 /* Layer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		CE6B356428BCC33700DA59F5 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		CE6B356628BCC39A00DA59F5 /* Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Content.swift; sourceTree = "<group>"; };
 		CECC714F28BB8CE8001D78E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CEE51AF828CF7A4700DB1462 /* Layer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,7 @@
 				CECC714F28BB8CE8001D78E6 /* Info.plist */,
 				CE33BAA428BB87D100832174 /* App.swift */,
 				CE6B356628BCC39A00DA59F5 /* Content.swift */,
+				CEE51AF828CF7A4700DB1462 /* Layer.swift */,
 				CE6B356428BCC33700DA59F5 /* Session.swift */,
 				CE33BAA628BB87D100832174 /* Window.swift */,
 				CE33BAA828BB87D200832174 /* Assets.xcassets */,
@@ -153,6 +156,7 @@
 			files = (
 				CE33BAA728BB87D100832174 /* Window.swift in Sources */,
 				CE6B356528BCC33700DA59F5 /* Session.swift in Sources */,
+				CEE51AF928CF7A4700DB1462 /* Layer.swift in Sources */,
 				CE33BAA528BB87D100832174 /* App.swift in Sources */,
 				CE6B356728BCC39A00DA59F5 /* Content.swift in Sources */,
 			);

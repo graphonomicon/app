@@ -1,22 +1,22 @@
 import AppKit
 import Coffee
 import Combine
-import MetalKit
 
 final class Content: NSView {
     private var subs = Set<AnyCancellable>()
+    private let timer = Timer.publish(every: 0.02, on: .main, in: .common).autoconnect()
     
     required init?(coder: NSCoder) { nil }
     init(session: Session) {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
+        layer = Layer()
         wantsLayer = true
-        layer!.backgroundColor = .white
-        
-        guard
-            let device = MTLCreateSystemDefaultDevice(),
-            let view = Miew2(device: device)
-        else { return }
-        addSubview(view)
+
+        timer
+            .sink { [weak self] _ in
+                self?.layer!.setNeedsDisplay()
+            }
+            .store(in: &subs)
     }
 }
