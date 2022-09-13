@@ -3,7 +3,7 @@ import XCTest
 
 final class PuzzleTests: XCTestCase {
     func testMinDistance() {
-        let puzzle = Puzzle.new(points: 300, length: Puzzle.Constants.distance.min)
+        let puzzle = Constelation.new(points: 300, length: Constelation.Constants.distance.min)
         
         puzzle
             .points
@@ -14,7 +14,7 @@ final class PuzzleTests: XCTestCase {
                         $0.id != point.id
                     }
                     .filter { other in
-                        pow(point.x - other.x, 2) + pow(point.y - other.y, 2) < Puzzle.Constants.distance.min
+                        pow(point.x - other.x, 2) + pow(point.y - other.y, 2) < Constelation.Constants.distance.min
                     }
                     .isEmpty)
             }

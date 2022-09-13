@@ -20,4 +20,8 @@ final class Content: NSView {
             }
             .store(in: &subs)
     }
+    
+    override func scrollWheel(with event: NSEvent) {
+        print(event)
+    }
 }

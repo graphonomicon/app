@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Puzzle {
+public struct Constelation {
     public static func new(points: Int, length: Double) -> Self {
         let range = Range(uncheckedBounds: (-length, length))
         return .init(points: (0 ..< points)
@@ -16,15 +16,11 @@ public struct Puzzle {
                     .isEmpty
                 else { return }
                 
-                result.insert(.init(x: x,
+                result.append(.init(x: x,
                                     y: y,
                                     radius: .random(in: Constants.radius)))
             })
     }
     
-    public let points: Set<Point>
-    
-    init(points: Set<Point>) {
-        self.points = points
-    }
+    public let points: [Point]
 }

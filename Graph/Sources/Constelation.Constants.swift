@@ -1,4 +1,4 @@
-extension Puzzle {
+extension Constelation {
     struct Constants {
         struct distance {
             static let min = Double(1600)
