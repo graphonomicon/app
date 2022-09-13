@@ -14,8 +14,8 @@ final class Layer: CALayer {
     }
     
     override func draw(in context: CGContext) {
-        context.translateBy(x: 400, y: 400)
-        context.scaleBy(x: 10, y: 10)
+        context.translateBy(x: model.origin.x, y: model.origin.y)
+        context.scaleBy(x: model.zoom, y: model.zoom)
         
         context.move(to: .init(x: model.constelation.points.first!.x, y: model.constelation.points.first!.y))
         context.addLine(to: .init(x: model.constelation.points.last!.x, y: model.constelation.points.last!.y))
