@@ -16,10 +16,9 @@ public struct Puzzle {
                     .isEmpty
                 else { return }
                 
-                let z = Double.random(in: Constants.distance.deep)
                 result.insert(.init(x: x,
                                     y: y,
-                                    z: z))
+                                    radius: .random(in: Constants.radius)))
             })
     }
     

@@ -4,13 +4,13 @@ extension Puzzle {
     public struct Point: Hashable {
         public let x: Double
         public let y: Double
-        public let z: Double
+        public let radius: Double
         let id: UUID
         
-        init(x: Double, y: Double, z: Double) {
+        init(x: Double, y: Double, radius: Double) {
             self.x = x
             self.y = y
-            self.z = z
+            self.radius = radius
             id = .init()
         }
     }

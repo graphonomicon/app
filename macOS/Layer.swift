@@ -15,11 +15,11 @@ final class Layer: CALayer {
                 context
                     .addArc(
                         center: .init(x: point.x, y: point.y),
-                        radius: 5 + point.z,
+                        radius: point.radius,
                         startAngle: .zero,
                         endAngle: pi2,
                         clockwise: true)
-                context.setFillColor(NSColor.systemBlue.cgColor)
+                context.setFillColor(NSColor.systemMint.cgColor)
                 context.fillPath()
             }
     }
