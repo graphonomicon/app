@@ -10,12 +10,12 @@ final class Layer: CALayer {
     init(model: Model) {
         self.model = model
         super.init()
-        
+        backgroundColor = .white
     }
     
     override func draw(in context: CGContext) {
-        context.translateBy(x: bounds.midX + model.origin.x, y: bounds.midY + model.origin.y)
-        context.scaleBy(x: model.zoom, y: model.zoom)
+        context.translateBy(x: 400, y: 400)
+        context.scaleBy(x: 10, y: 10)
         
         context.move(to: .init(x: model.constelation.points.first!.x, y: model.constelation.points.first!.y))
         context.addLine(to: .init(x: model.constelation.points.last!.x, y: model.constelation.points.last!.y))

@@ -1,4 +1,5 @@
 import AppKit
+import Coffee
 
 final class Window: NSWindow {
     init(session: Session) {
@@ -17,13 +18,32 @@ final class Window: NSWindow {
         tabbingMode = .disallowed
         titlebarAppearsTransparent = true
         
-        let content = Content(session: session)
-        contentView!.addSubview(content)
+        let scroll = Scroll()
+        scroll.contentView.postsBoundsChangedNotifications = false
+        scroll.contentView.postsFrameChangedNotifications = false
+        scroll.backgroundColor = .white
+//        scroll.drawsBackground = true
+        scroll.hasHorizontalScroller = true
+        scroll.horizontalScroller!.controlSize = .mini
+        scroll.maxMagnification = 2
+        scroll.minMagnification = 0.01
+        scroll.allowsMagnification = true
+        contentView!.addSubview(scroll)
         
-        content.topAnchor.constraint(equalTo: contentView!.topAnchor).isActive = true
-        content.bottomAnchor.constraint(equalTo: contentView!.bottomAnchor).isActive = true
-        content.leftAnchor.constraint(equalTo: contentView!.leftAnchor).isActive = true
-        content.rightAnchor.constraint(equalTo: contentView!.rightAnchor).isActive = true
+        let content = Content(session: session)
+        scroll.documentView!.addSubview(content)
+        
+        scroll.topAnchor.constraint(equalTo: contentView!.topAnchor).isActive = true
+        scroll.bottomAnchor.constraint(equalTo: contentView!.bottomAnchor).isActive = true
+        scroll.leftAnchor.constraint(equalTo: contentView!.leftAnchor).isActive = true
+        scroll.rightAnchor.constraint(equalTo: contentView!.rightAnchor).isActive = true
+        
+        scroll.documentView!.bottomAnchor.constraint(equalTo: contentView!.bottomAnchor).isActive = true
+        
+        content.centerXAnchor.constraint(equalTo: contentView!.centerXAnchor).isActive = true
+        content.centerYAnchor.constraint(equalTo: contentView!.centerYAnchor).isActive = true
+        content.widthAnchor.constraint(equalToConstant: 800).isActive = true
+        content.heightAnchor.constraint(equalToConstant: 800).isActive = true
     }
     
     override func close() {
